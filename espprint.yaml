@@ -3,11 +3,11 @@ esphome:
   platform: ESP32
   board: nodemcu-32s
   includes:
-    - gcode_sender.h
-    - sd_gcode_sender.h
-    - gcode_reader.h
-    - upload_server.h
-    - ring_buffer.h
+    - src/gcode_sender.h
+    - src/sd_gcode_sender.h
+    - src/gcode_reader.h
+    - src/upload_server.h
+    - src/ring_buffer.h
   on_boot:
     - lambda: SD_MMC.begin();
     - lambda: get_sender(id(gcode_sender))->sendGCodeForce("M110 N0");
@@ -24,7 +24,7 @@ wifi:
     ssid: "Printer Fallback Hotspot"
     password: !secret fallback_password
 
-#captive_portal:
+captive_portal:
 
 # Enable logging
 logger:
