@@ -6,6 +6,7 @@ esphome:
     - src/gcode_sender.h
     - src/sd_gcode_sender.h
     - src/gcode_reader.h
+    - src/gcode_reader_sensors.h
     - src/upload_server.h
     - src/ring_buffer.h
   on_boot:
@@ -69,7 +70,7 @@ custom_component:
     return {sender};
 - id: gcode_reader
   lambda: |-
-    auto reader = new GCodeReader(id(uart_bus), get_sdSender(id(gcode_sender)), 2);
+    auto reader = new GCodeReaderSensors(id(uart_bus), get_sdSender(id(gcode_sender)), 2);
     return {reader};
 - id: upload_server
   lambda: |-
@@ -80,7 +81,7 @@ custom_component:
 sensor:
 - platform: custom
   lambda: |-
-    auto reader = get_reader(id(gcode_reader));
+    auto reader = get_readerSensors(id(gcode_reader));
     return reader->temperatures;
   sensors:
   - name: "Tool Current Temperature"
@@ -97,19 +98,11 @@ sensor:
     accuracy_decimals: 2
 - platform: uptime
   name: Uptime
-  
-binary_sensor:
-- platform: custom
-  lambda: |-
-    auto reader = get_reader(id(gcode_reader));
-    return {&reader->sdCardPrinting};
-  binary_sensors:
-  - name: "SD Card Printing"
 
 text_sensor:
 - platform: custom
   lambda: |-
-    auto reader = get_reader(id(gcode_reader));
+    auto reader = get_readerSensors(id(gcode_reader));
     return {&reader->lastAction};
   text_sensors:
   - name: "Last Action"
