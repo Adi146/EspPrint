@@ -25,14 +25,22 @@ public:
   }
 
   bool canHandle(AsyncWebServerRequest *request) override {
-    return request->method() == HTTP_POST;
+    if (!request->url().startsWith("/api/")) {
+      return false;
+    }
+    return true ;
   }
 
   bool isRequestHandlerTrivial() override { 
     return false; 
   }
 
-  void handleRequest(AsyncWebServerRequest *request) override {}
+  void handleRequest(AsyncWebServerRequest *request) override {
+    if (request->url().startsWith("/api/version") && request->method() == HTTP_GET) { // Fake Ocoprint API for slicer upload
+      request->send(200, "application/json", R"({"api": "0.1", "server": "0.1", "text": "OctoPrint 0.1"})");
+      return;
+    }
+  }
 
   void handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
     if (!index) {
@@ -42,14 +50,15 @@ public:
 
     if (!request->_tempFile) {
       ESP_LOGE("sdcard", "Cannot write File");
-      request->send(500, "test/plain", "Cannot write File");
+      request->send(500, "text/plain", "Cannot write File");
       return;
     }
 
     request->_tempFile.write(data, len);
-    if (final)
+    if (final) {
+      ESP_LOGI("upload", "Upload complete %s", filename.c_str());
       request->_tempFile.close();
-
-    request->send(201, "text/plain", "Upload Success");
+      request->send(201, "text/plain", "Upload Success");
+    }
   }
 };
