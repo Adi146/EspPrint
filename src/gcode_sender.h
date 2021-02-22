@@ -85,8 +85,6 @@ public:
       maxPlannerBufferSize = plannerBuffer;
     if (commandBuffer > maxCommandBufferSize)
       maxCommandBufferSize = commandBuffer;
-
-    transmittedBuffer.setReadPtr(lineNumber);
   }
 
   void handleResend(uint64_t lineNumber) {
