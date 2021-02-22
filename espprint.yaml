@@ -87,13 +87,13 @@ sensor:
   - name: "Tool Current Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
-  - name: "Tool Target Temperatur"
+  - name: "Tool Target Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
   - name: "Bed Current Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
-  - name: "Bed Target Temperatur"
+  - name: "Bed Target Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
 - platform: uptime

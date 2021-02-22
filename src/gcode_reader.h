@@ -3,7 +3,6 @@
 #include "esphome.h"
 #include <regex>
 #include <string>
-#include <vector>
 #include "gcode_sender.h"
 
 using namespace esphome::custom_component;
