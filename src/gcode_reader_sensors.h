@@ -4,7 +4,7 @@
 
 class GCodeReaderSensors: public GCodeReader {
 private:
-  std::regex temperatureRgx = std::regex(R"(([BTA](\d*)):\s*([-+]?[0-9]*\.?[0-9]+)(\s*\/?\s*([-+]?[0-9]*\.?[0-9]+))?)");
+  std::regex temperatureRgx = std::regex(R"(([BTA](\d*)):\s*([-+]?[0-9]*\.?[0-9]+)(\s*\/\s*([-+]?[0-9]*\.?[0-9]+)))");
   std::string actionStr = "//action:notification ";
 
   bool updateTemperatureSensors(std::string line) {
