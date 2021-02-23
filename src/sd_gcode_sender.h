@@ -2,6 +2,7 @@
 
 #include "gcode_sender.h"
 #include "FS.h"
+#include <regex>
 
 using namespace esphome::custom_component;
 
@@ -12,7 +13,41 @@ private:
   File file;
   fs::FS fs_;
 
+  std::regex M73Rgx = std::regex(R"(^M73 P(\d+) R(\d+)$)");
+
+  std::string readNextGCode() {
+    char buffer[128] = "";
+    for (int i = 0; i < sizeof(buffer) && file.available(); i++) {
+      char c = file.read();
+      switch (c) {
+      case ';':
+        file.readStringUntil('\n');
+      case '\n':
+        if (i > 1)
+          return std::string(buffer);
+        i = -1;
+      default:
+        buffer[i] = c;
+        if (i < sizeof(buffer))
+          buffer[i + 1] = 0;
+      }
+    }
+
+    return buffer;
+  }
+
+  void handleM73(std::string& gcode) {
+    std::smatch match;
+    if (std::regex_match(gcode, match, M73Rgx)) {
+      printProgress.publish_state(atoi(match[1].str().c_str()));
+      remainingTime.publish_state(atoi(match[2].str().c_str()));
+    }
+  }
+
 public:
+  Sensor printProgress;
+  Sensor remainingTime;
+
   SDGCodeSender(UARTComponent *parent, fs::FS &fs) : GCodeSender(parent), fs_(fs) {}
 
   void setup() override {}
@@ -20,8 +55,11 @@ public:
   void loop() override {
     if (file.available() && !buffer.full()) {
       std::string gcode = readNextGCode();
-      if (!gcode.empty())
+      if (!gcode.empty()) {
         bufferGCode(gcode);
+
+        handleM73(gcode);
+      }
     }
 
     GCodeSender::loop();
@@ -48,26 +86,5 @@ public:
     sendGCode("M140 S0");
     sendGCode("G28 X Y");
     sendGCode("M84");
-  }
-
-  std::string readNextGCode() {
-    char buffer[128] = "";
-    for (int i = 0; i < sizeof(buffer) && file.available(); i++) {
-      char c = file.read();
-      switch (c) {
-      case ';':
-        file.readStringUntil('\n');
-      case '\n':
-        if (i > 1)
-          return std::string(buffer);
-        i = -1;
-      default:
-        buffer[i] = c;
-        if (i < sizeof(buffer))
-          buffer[i + 1] = 0;
-      }
-    }
-
-    return buffer;
   }
 };

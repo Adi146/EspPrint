@@ -30,7 +30,7 @@ captive_portal:
 # Enable logging
 logger:
   baud_rate: 0
-  level: DEBUG
+  level: INFO
 
 # Enable Home Assistant API
 api:
@@ -96,6 +96,15 @@ sensor:
   - name: "Bed Target Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
+- platform: custom
+  lambda: |-
+    auto sender = get_sdSender(id(gcode_sender));
+    return {&sender->printProgress, &sender->remainingTime};
+  sensors:
+  - name: "Print Progress"
+    unit_of_measurement: "%"
+  - name: "Remaining Time"
+    unit_of_measurement: "min"
 - platform: uptime
   name: Uptime
 
@@ -107,11 +116,4 @@ text_sensor:
   text_sensors:
   - name: "Last Action"
 
-output:
-  - platform: gpio
-    pin: GPIO4
-    id: gpio_4
-light:
-  - platform: binary
-    output: gpio_4
-    name: Flash Light
+<<: !include camera.yaml
