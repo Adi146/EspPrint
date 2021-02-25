@@ -115,7 +115,14 @@ sensor:
     return {memory};
   sensors:
   - name: "ESP Free Memory"
-    unit_of_measurement: "bytes"    
+    unit_of_measurement: "bytes"
+- platform: custom
+  lambda: |-
+    auto reader = get_readerSensors(id(gcode_reader));
+    return {&reader->resends};
+  sensors:
+  - name: "Print Resends"
+    unit_of_measurement: "number"    
 
 text_sensor:
 - platform: custom

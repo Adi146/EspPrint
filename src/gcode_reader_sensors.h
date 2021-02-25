@@ -7,7 +7,9 @@ private:
   std::regex temperatureRgx = std::regex(R"(([BTA](\d*)):\s*([-+]?[0-9]*\.?[0-9]+)(\s*\/\s*([-+]?[0-9]*\.?[0-9]+)))");
   std::string actionStr = "//action:notification ";
 
-  bool updateTemperatureSensors(std::string line) {
+  uint64_t numResends = 0;
+
+  bool updateTemperatureSensors(std::string& line) {
     auto begin = std::sregex_iterator(line.begin(), line.end(), temperatureRgx);
     auto end = std::sregex_iterator();
 
@@ -25,7 +27,7 @@ private:
     return begin != end;
   }
 
-  bool handleAction(std::string line) {
+  bool handleAction(std::string& line) {
     if (line.rfind(actionStr, 0) == 0) {
       lastAction.publish_state(line.substr(actionStr.length()));
       return true;
@@ -48,6 +50,15 @@ protected:
     return false;
   }
 
+  virtual bool handleResend(std::string& line) override {
+    if (GCodeReader::handleResend(line)) {
+        resends.publish_state(++numResends);
+        return true;
+    }
+
+    return false;
+  }
+
 public:
   GCodeReaderSensors(UARTComponent* parent, GCodeSender* sender, int numTemperatures): 
   GCodeReader(parent, sender) {
@@ -59,4 +70,5 @@ public:
 
   std::vector<Sensor*> temperatures;
   TextSensor lastAction;
+  Sensor resends;
 };

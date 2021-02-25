@@ -45,22 +45,7 @@ protected:
     return false;
   }
 
-public:
-  GCodeReader(UARTComponent* parent, GCodeSender* sender) : 
-  UARTDevice(parent),
-  sender(sender) {
-  }
-
-  void loop() override {
-    std::string line = readLine();
-    if(line.length() > 0) {
-      ESP_LOGI("gcode_reader", "RECV: %s", line.c_str());
-
-      processLine(line);
-    }
-  }
-
-  bool handleOK(std::string line) {
+  bool handleOK(std::string& line) {
     std::smatch match;
 
     if (std::regex_search(line, match, okRgx)) {
@@ -75,7 +60,7 @@ public:
     return false;
   }
 
-  bool handleResend(std::string line) {
+  virtual bool handleResend(std::string& line) {
     std::smatch match;
     if (std::regex_search(line, match, resendRgx)) {
       sender->handleResend(atoi(match[1].str().c_str()));
@@ -83,5 +68,20 @@ public:
     }
 
     return false;
+  }
+
+public:
+  GCodeReader(UARTComponent* parent, GCodeSender* sender) : 
+  UARTDevice(parent),
+  sender(sender) {
+  }
+
+  void loop() override {
+    std::string line = readLine();
+    if(line.length() > 0) {
+      ESP_LOGI("gcode_reader", "RECV: %s", line.c_str());
+
+      processLine(line);
+    }
   }
 };
