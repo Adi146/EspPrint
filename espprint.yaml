@@ -9,6 +9,7 @@ esphome:
     - src/gcode_reader_sensors.h
     - src/upload_server.h
     - src/ring_buffer.h
+    - src/memory_sensor.h
   on_boot:
     - lambda: SD_MMC.begin();
     - lambda: get_sender(id(gcode_sender))->sendGCodeForce("M110 N0");
@@ -107,6 +108,14 @@ sensor:
     unit_of_measurement: "min"
 - platform: uptime
   name: Uptime
+- platform: custom
+  lambda: |-
+    auto memory = new MemorySensor();
+    App.register_component(memory);
+    return {memory};
+  sensors:
+  - name: "ESP Free Memory"
+    unit_of_measurement: "bytes"    
 
 text_sensor:
 - platform: custom
