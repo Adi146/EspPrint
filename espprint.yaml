@@ -12,9 +12,9 @@ esphome:
     - src/memory_sensor.h
   on_boot:
     - lambda: SD_MMC.begin();
+    - delay: 4s
     - lambda: get_sender(id(gcode_sender))->sendGCodeForce("M110 N0");
-    - lambda: get_sender(id(gcode_sender))->sendGCode("M117 Hello There");
-    - lambda: get_sender(id(gcode_sender))->sendGCode("M27 S4");
+    - lambda: get_sender(id(gcode_sender))->sendGCode("M117 EspPrint Connected");
     - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
 
 wifi:
