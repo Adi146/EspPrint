@@ -46,4 +46,8 @@ public:
   uint64_t getWritePtr() {
     return write_ptr;
   }
+
+  uint64_t getReadPtr() {
+    return read_ptr;
+  }
 };

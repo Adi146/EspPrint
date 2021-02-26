@@ -75,7 +75,7 @@ public:
     }
 
     buffer.reset();
-    transmittedBuffer.reset();
+    resendBuffer.reset();
     sendGCodeForce("M110 N0");
   }
 
