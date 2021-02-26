@@ -22,6 +22,7 @@ protected:
   RingBuffer<std::string> buffer;
   RingBuffer<std::string> resendBuffer;
 
+  int m_resendCounter = 0;
   bool resend = false;
   int throttleDelayMS = MIN_DELAY_MS;
 
@@ -109,10 +110,15 @@ public:
   void handleResend(uint64_t lineNumber) {
     resendBuffer.setReadPtr(lineNumber);
     resend = true;
+    m_resendCounter++;
     ESP_LOGW("gcode_sender", "resend requested for line %llu", lineNumber);
     if (throttleDelayMS < MAX_DELAY_MS) {
       throttleDelayMS++;
       ESP_LOGI("gcode_sender", "increase throttle to %d ms", throttleDelayMS);
     }
+  }
+
+  int getResendCounter() {
+    return m_resendCounter;
   }
 };

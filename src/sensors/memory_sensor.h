@@ -2,6 +2,8 @@
 
 #include "esphome.h"
 
+namespace sensors {
+
 class MemorySensor: public PollingComponent, public Sensor {
 public:
   MemorySensor(): PollingComponent(1000) {}
@@ -10,3 +12,4 @@ public:
     publish_state(ESP.getFreeHeap());
   }
 };
+}

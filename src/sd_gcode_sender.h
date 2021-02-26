@@ -1,10 +1,13 @@
 #pragma once
 
 #include "gcode_sender.h"
+#include "gcode_sensor.h"
 #include "FS.h"
 #include <regex>
+#include <vector>
 
 using namespace esphome::custom_component;
+using namespace sensors;
 
 #define get_sdSender(constructor) static_cast<SDGCodeSender *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
@@ -13,7 +16,7 @@ private:
   File file;
   fs::FS fs_;
 
-  std::regex M73Rgx = std::regex(R"(^M73 P(\d+) R(\d+)$)");
+  std::vector<GCodeSensor*> m_sensors = std::vector<GCodeSensor*>();
 
   std::string readNextGCode() {
     char buffer[128] = "";
@@ -36,18 +39,7 @@ private:
     return buffer;
   }
 
-  void handleM73(std::string& gcode) {
-    std::smatch match;
-    if (std::regex_match(gcode, match, M73Rgx)) {
-      printProgress.publish_state(atoi(match[1].str().c_str()));
-      remainingTime.publish_state(atoi(match[2].str().c_str()));
-    }
-  }
-
 public:
-  Sensor printProgress;
-  Sensor remainingTime;
-
   SDGCodeSender(UARTComponent *parent, fs::FS &fs) : GCodeSender(parent), fs_(fs) {}
 
   void setup() override {}
@@ -58,7 +50,10 @@ public:
       if (!gcode.empty()) {
         bufferGCode(gcode);
 
-        handleM73(gcode);
+        for (auto sensor: m_sensors) {
+          if (sensor->handleLine(gcode))
+            break;
+        }
       }
     }
 
@@ -86,5 +81,9 @@ public:
     sendGCode("M140 S0");
     sendGCode("G28 X Y");
     sendGCode("M84");
+  }
+
+  void addSensor(GCodeSensor* sensor) {
+    m_sensors.push_back(sensor);
   }
 };

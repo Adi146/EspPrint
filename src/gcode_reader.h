@@ -6,6 +6,7 @@
 #include "gcode_sender.h"
 
 using namespace esphome::custom_component;
+using namespace sensors;
 
 #define get_reader(constructor) static_cast<GCodeReader *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
@@ -13,6 +14,8 @@ class GCodeReader : public Component, public UARTDevice {
 private:
   std::regex okRgx = std::regex(R"(^ok (N(\d+) )?(P(\d+)) (B(\d+))$)");
   std::regex resendRgx = std::regex(R"(Resend: (\d+))");
+
+  std::vector<GCodeSensor*> m_sensors = std::vector<GCodeSensor*>();
 
   GCodeSender* sender;
 
@@ -41,6 +44,11 @@ protected:
       
     if (handleResend(line))
       return true;
+
+    for (auto sensor: m_sensors) {
+      if (sensor->handleLine(line))
+        return true;
+    }
 
     return false;
   }
@@ -83,5 +91,9 @@ public:
 
       processLine(line);
     }
+  }
+
+  void addSensor(GCodeSensor* sensor) {
+    m_sensors.push_back(sensor);
   }
 };

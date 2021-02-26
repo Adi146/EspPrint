@@ -2,14 +2,7 @@ esphome:
   name: espprint
   platform: ESP32
   board: nodemcu-32s
-  includes:
-    - src/gcode_sender.h
-    - src/sd_gcode_sender.h
-    - src/gcode_reader.h
-    - src/gcode_reader_sensors.h
-    - src/upload_server.h
-    - src/ring_buffer.h
-    - src/memory_sensor.h
+  includes: !include include.yaml
   on_boot:
     - lambda: SD_MMC.begin();
     - delay: 4s
@@ -71,7 +64,7 @@ custom_component:
     return {sender};
 - id: gcode_reader
   lambda: |-
-    auto reader = new GCodeReaderSensors(id(uart_bus), get_sdSender(id(gcode_sender)), 2);
+    auto reader = new GCodeReader(id(uart_bus), get_sdSender(id(gcode_sender)));
     return {reader};
 - id: upload_server
   lambda: |-
@@ -82,8 +75,9 @@ custom_component:
 sensor:
 - platform: custom
   lambda: |-
-    auto reader = get_readerSensors(id(gcode_reader));
-    return reader->temperatures;
+    auto temperature = new sensors::TemperatureSensor(2);
+    get_reader(id(gcode_reader))->addSensor(temperature);
+    return temperature->m_temperatures;
   sensors:
   - name: "Tool Current Temperature"
     unit_of_measurement: °C
@@ -99,8 +93,9 @@ sensor:
     accuracy_decimals: 2
 - platform: custom
   lambda: |-
-    auto sender = get_sdSender(id(gcode_sender));
-    return {&sender->printProgress, &sender->remainingTime};
+    auto progress = new sensors::ProgressSensor();
+    get_sdSender(id(gcode_sender))->addSensor(progress);
+    return {&progress->m_printProgress, &progress->m_remainingTime};
   sensors:
   - name: "Print Progress"
     unit_of_measurement: "%"
@@ -110,7 +105,7 @@ sensor:
   name: Uptime
 - platform: custom
   lambda: |-
-    auto memory = new MemorySensor();
+    auto memory = new sensors::MemorySensor();
     App.register_component(memory);
     return {memory};
   sensors:
@@ -118,8 +113,9 @@ sensor:
     unit_of_measurement: "bytes"
 - platform: custom
   lambda: |-
-    auto reader = get_readerSensors(id(gcode_reader));
-    return {&reader->resends};
+    auto resend = new sensors::ResendSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(resend);
+    return {resend};
   sensors:
   - name: "Print Resends"
     unit_of_measurement: "number"    
@@ -127,8 +123,9 @@ sensor:
 text_sensor:
 - platform: custom
   lambda: |-
-    auto reader = get_readerSensors(id(gcode_reader));
-    return {&reader->lastAction};
+    auto action = new sensors::ActionSensor();
+    get_reader(id(gcode_reader))->addSensor(action);
+    return {action};
   text_sensors:
   - name: "Last Action"
 
