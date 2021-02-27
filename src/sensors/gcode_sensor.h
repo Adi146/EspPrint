@@ -2,6 +2,8 @@
 
 #include "esphome.h"
 
+using namespace esphome;
+
 namespace sensors {
   class GCodeSensor: public Component {
   public:
