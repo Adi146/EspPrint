@@ -128,5 +128,12 @@ text_sensor:
     return {action};
   text_sensors:
   - name: "Last Action"
+- platform: custom
+  lambda: |-
+    auto file = new sensors::FileSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(file);
+    return {file};
+  text_sensors:
+  - name: "Current File"
 
 <<: !include camera.yaml

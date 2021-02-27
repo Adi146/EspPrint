@@ -13,3 +13,4 @@
 - src/sensors/action_sensor.h
 - src/sensors/temperature_sensor.h
 - src/sensors/resend_sensor.h
+- src/sensors/file_sensor.h

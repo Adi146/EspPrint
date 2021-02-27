@@ -32,4 +32,8 @@ public:
   void addSensor(GCodeSensor* sensor) {
     m_sensors.push_back(sensor);
   }
+
+  std::string getFilename() {
+    return m_file.available() ? std::string(m_file.name()) : "";
+  }
 };
