@@ -3,6 +3,7 @@
 - src/sd_gcode_sender.h
 - src/sd_gcode_sender.cpp
 - src/gcode_reader.h
+- src/gcode_reader.cpp
 - src/upload_server.h
 - src/util/ring_buffer.h
 - src/sensors/gcode_sensor.h
