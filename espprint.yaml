@@ -68,7 +68,7 @@ custom_component:
     return {reader};
 - id: upload_server
   lambda: |-
-    auto upload = new UploadServer(id(upload_server_base), SD_MMC);
+    auto upload = new util::UploadServer(id(upload_server_base), SD_MMC);
     App.register_component(upload);
     return {upload};
 

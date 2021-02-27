@@ -4,7 +4,8 @@
 - src/sd_gcode_sender.cpp
 - src/gcode_reader.h
 - src/gcode_reader.cpp
-- src/upload_server.h
+- src/util/upload_server.h
+- src/util/upload_server.cpp
 - src/util/ring_buffer.h
 - src/sensors/gcode_sensor.h
 - src/sensors/progress_sensor.h
