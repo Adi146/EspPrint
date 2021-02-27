@@ -24,8 +24,8 @@ using namespace std::chrono;
 
 class GCodeSender : public Component, public UARTDevice {
 protected:
-  RingBuffer<std::string> m_buffer;
-  RingBuffer<std::string> m_resendBuffer;
+  util::RingBuffer<std::string> m_buffer;
+  util::RingBuffer<std::string> m_resendBuffer;
 
   int m_resendCounter = 0;
   bool m_resend = false;
