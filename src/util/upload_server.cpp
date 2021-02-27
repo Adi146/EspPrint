@@ -2,7 +2,7 @@
 
 using namespace util;
 
-UploadServer::UploadServer(web_server_base::WebServerBase *base, fs::FS &fs):  m_base(base), m_fs(fs) {
+UploadServer::UploadServer(web_server_base::WebServerBase* base, SDGCodeSender* sender):  m_base(base), m_sender(sender) {
 }
 
 void UploadServer::setup() {
@@ -22,12 +22,19 @@ void UploadServer::handleRequest(AsyncWebServerRequest *request) {
     request->send(200, "application/json", R"({"api": "0.1", "server": "0.1", "text": "OctoPrint 0.1"})");
     return;
   }
+  if (request->url().startsWith("/api/files/local") && request->method() == HTTP_POST) {
+    auto printParam = request->getParam("print", true, false);
+    auto fileParam = request->getParam("file", true, true);
+    if (fileParam && printParam && printParam->value() == "true") {
+      m_sender->print(("/" + fileParam->value()).c_str());
+    }
+  }
 }
 
 void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
   if (!index) {
     ESP_LOGI("upload", "Upload Request %s", filename.c_str());
-    request->_tempFile = m_fs.open('/' + filename, FILE_WRITE);
+    request->_tempFile = m_sender->getFS().open('/' + filename, FILE_WRITE);
   }
 
   if (!request->_tempFile) {

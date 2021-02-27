@@ -3,6 +3,7 @@
 #include "gcode_sender.h"
 #include "gcode_sensor.h"
 #include "FS.h"
+#include "SD_MMC.h"
 #include <regex>
 #include <vector>
 
@@ -35,5 +36,9 @@ public:
 
   std::string getFilename() {
     return m_file.available() ? std::string(m_file.name()) : "";
+  }
+
+  fs::FS& getFS() {
+    return m_fs;
   }
 };

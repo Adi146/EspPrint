@@ -2,7 +2,7 @@
 
 #include "esphome.h"
 #include "FS.h"
-#include "SD_MMC.h"
+#include "sd_gcode_sender.h"
 
 using namespace esphome;
 
@@ -10,10 +10,10 @@ namespace util {
   class UploadServer: public Component, public AsyncWebHandler {
   protected:
     web_server_base::WebServerBase* m_base;
-    fs::FS m_fs;
+    SDGCodeSender* m_sender;
 
   public:
-    UploadServer(web_server_base::WebServerBase *base, fs::FS &fs);
+    UploadServer(web_server_base::WebServerBase* base, SDGCodeSender* sender);
 
     void setup() override;
 

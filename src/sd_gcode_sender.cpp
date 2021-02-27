@@ -40,6 +40,11 @@ void SDGCodeSender::loop() {
 }
 
 void SDGCodeSender::print(std::string filename) {
+  if (m_file.available()) {
+    ESP_LOGW("sdcard", "Already printing, ignored");
+    return;
+  }
+
   ESP_LOGI("sdcard", "Start printing from SD-Card %s", filename.c_str());
 
   m_file = m_fs.open(filename.c_str());
