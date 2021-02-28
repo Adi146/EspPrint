@@ -60,6 +60,7 @@ void SDGCodeSender::print(std::string filename) {
 
 void SDGCodeSender::stop() {
   m_file.close();
+  m_buffer.reset();
 
   sendGCode("M104 S0");
   sendGCode("M140 S0");
