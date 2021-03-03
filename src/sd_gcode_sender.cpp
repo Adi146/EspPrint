@@ -28,11 +28,6 @@ void SDGCodeSender::loop() {
     std::string gcode = readNextGCode();
     if (!gcode.empty()) {
       bufferGCode(gcode);
-
-      for (auto sensor: m_sensors) {
-        if (sensor->handleLine(gcode))
-          break;
-      }
     }
   }
 

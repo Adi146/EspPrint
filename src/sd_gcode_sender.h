@@ -5,7 +5,6 @@
 #include "FS.h"
 #include "SD_MMC.h"
 #include <regex>
-#include <vector>
 
 using namespace esphome;
 using namespace esphome::custom_component;
@@ -17,7 +16,6 @@ class SDGCodeSender: public GCodeSender {
 private:
   File m_file;
   fs::FS m_fs;
-  std::vector<GCodeSensor*> m_sensors = std::vector<GCodeSensor*>();
 
   std::string readNextGCode();
 
@@ -29,10 +27,6 @@ public:
   void print(std::string filename);
 
   void stop();
-
-  void addSensor(GCodeSensor* sensor) {
-    m_sensors.push_back(sensor);
-  }
 
   std::string getFilename() {
     return m_file.available() ? std::string(m_file.name()) : "";

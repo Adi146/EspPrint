@@ -22,6 +22,10 @@ namespace util {
     T& pop() {
       return buffer[read_ptr++ % capacity];
     }
+
+    T& peek() {
+      return buffer[read_ptr % capacity];
+    }
   
     bool empty() {
       return write_ptr < read_ptr;

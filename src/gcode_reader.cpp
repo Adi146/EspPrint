@@ -1,28 +1,48 @@
 #include "gcode_reader.h"
 
-GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender): UARTDevice(parent), m_sender(sender) {
+GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender): 
+  UARTDevice(parent), 
+  m_sender(sender),
+  m_sensorBuffer(READER_SENSOR_BUFFER_SIZE){
 }
 
-std::string GCodeReader::readLine() {
+void GCodeReader::setup() {
+  Threading::setup();
+}
+
+void GCodeReader::loop() {
+  while(!m_sensorBuffer.empty()) {
+    std::string line = m_sensorBuffer.pop();
+
+    ESP_LOGI("gcode_reader", "RECV: %s", line.c_str());
+
+    for (auto sensor: m_sensors) {
+      if (sensor->handleLine(line))
+        break;
+    } 
+  }
+}
+
+bool GCodeReader::readLine(std::string* line) {
   for (int i = available(); i > 0; i--) {
     m_readBuffer[m_readBuffer_ptr] = read();
     if (m_readBuffer[m_readBuffer_ptr] == '\n' || m_readBuffer[m_readBuffer_ptr] >= 128) {
       m_readBuffer[m_readBuffer_ptr] = 0;
       m_readBuffer_ptr = 0;
-      return std::string(m_readBuffer);
+      *line = std::string(m_readBuffer);
+      return true;
     }
 
     m_readBuffer_ptr++;
   }
 
-  return std::string();
+  return false;
 }
 
 bool GCodeReader::handleOK(std::string& line) {
-  std::smatch match;
-
-  if (std::regex_search(line, match, m_okRgx)) {
-    int lineNumber = match[2].matched ? atoi(match[2].str().c_str()) : -1;
+std::smatch match;
+  if (std::regex_match(line, match, m_okRgx)) {
+    int64_t lineNumber = match[2].matched ? atoi(match[2].str().c_str()) : -1;
     int plannerBuffer = atoi(match[4].str().c_str());
     int commandBuffer = atoi(match[6].str().c_str());
 
@@ -43,20 +63,13 @@ bool GCodeReader::handleResend(std::string& line) {
   return false;
 }
 
-void GCodeReader::loop() {
-  std::string line = readLine();
-  if(line.length() > 0) {
-    ESP_LOGI("gcode_reader", "RECV: %s", line.c_str());
+void GCodeReader::threadLoop() {
+  std::string line;
 
-    if (handleOK(line))
-      return;
-      
-    if (handleResend(line))
-      return;
+  if (readLine(&line)) {
+    handleOK(line) || handleResend(line);
 
-    for (auto sensor: m_sensors) {
-      if (sensor->handleLine(line))
-        break;
-    }
-  }  
+    if(!m_sensorBuffer.full())
+      m_sensorBuffer.push(line);
+  }
 }
