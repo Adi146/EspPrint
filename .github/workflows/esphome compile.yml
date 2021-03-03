@@ -1,6 +1,3 @@
-name: C/C++ CI
-
-      
 name: esphome compile
 
 on: [push]
