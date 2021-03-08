@@ -32,7 +32,7 @@ namespace util {
     }
   
     bool full() {
-      return (write_ptr - read_ptr + 1) == capacity;
+      return (write_ptr - read_ptr + 1) >= capacity;
     }
   
     void reset() {
