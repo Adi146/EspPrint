@@ -4,7 +4,7 @@ namespace util {
   class Threading {
   public:
     virtual void setup() {
-      xTaskCreate(Threading::t, "readLoop", 16 * 1024, this, 1, &m_thread);
+      xTaskCreate(Threading::t, "threadLoop", 8 * 1024, this, 1, &m_thread);
     }
 
     virtual void threadLoop() = 0;
