@@ -1,9 +1,9 @@
 #include "gcode_sender.h"
 
-GCodeSender::GCodeSender(UARTComponent *parent): 
+GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize): 
   UARTDevice(parent), 
   m_buffer(BUFFER_SIZE), 
-  m_resendBuffer(RESEND_BUFFER_SIZE),
+  m_resendBuffer(resendBufferSize),
   m_sensorBuffer(SENDER_SENSOR_BUFFER_SIZE) {
 }
 
@@ -24,74 +24,99 @@ void GCodeSender::loop() {
   }
 }
 
-void GCodeSender::addLineNumberAndChecksum(std::string& gcode) {
-  uint64_t lineNumber = m_resendBuffer.getWritePtr() + 1; 
-  gcode = "N" + to_string(lineNumber) + " " + gcode;
-
-  int checksum = 0;
-  for (auto it = gcode.cbegin(); it != gcode.cend(); it++)
-    checksum ^= *it;
-
-  gcode = gcode + "*" + to_string(checksum);
-}
-
 void GCodeSender::threadLoop() {
-  if (m_resend) {
-    if(m_curCommandBufferSize == m_maxCommandBufferSize) {
-      sendGCodeForce(m_resendBuffer.peek());
+  m_sendMutex.lock();
+
+  if (m_resendLineNumber >= 0) {
+    if (m_resendBuffer.empty()) {
+      m_resendLineNumber = -1;
+    }
+
+    if (m_resendLineNumber == m_resendBuffer.getReadPtr()) {
+      auto gcode = m_resendBuffer.peek();
+      sendGCodeForce(gcode, m_resendLineNumber);
+      m_resendLineNumber++;
     }
   } 
-  else {
-    if (!m_buffer.empty() && !m_resendBuffer.full()) {
-      sendGCode(m_buffer.pop());
-    }
+  else if (!m_buffer.empty() && !m_resendBuffer.full()) {
+    sendGCode(m_buffer.pop());
   }
+
+  if (!m_resendBuffer.empty() && millis() - m_lastCommandTimestamp > 10000) {   
+    ESP_LOGW("gcode_sender", "timeout for line %llu, fake ok", m_resendBuffer.getReadPtr());
+    m_timeoutCounter++;
+    ok(0, 0, m_resendBuffer.getReadPtr());
+  }
+  m_sendMutex.unlock();
 }
 
-void GCodeSender::sendGCodeForce(std::string gcode) {
-  write_str((gcode + "\n").c_str());
-  m_curCommandBufferSize--;
+void GCodeSender::sendGCodeForce(std::string gcode, uint64_t lineNumber) {
+  char buffer[156] = "";
+  snprintf(buffer, sizeof(buffer), "N%llu %s", lineNumber, gcode.c_str());
 
-  if(!m_sensorBuffer.full())
-    m_sensorBuffer.push(gcode);
+  int checksum = 0;
+  for (auto i = 0; i < sizeof(buffer); i++) {
+    checksum ^= buffer[i];
+  }
+
+  snprintf(buffer, sizeof(buffer), "%s*%d", buffer, checksum);
+
+  write_str(buffer);
+  write('\n');
+
+  if(!m_sensorBuffer.full()) {
+    std::string strGCode(buffer);
+    m_sensorBuffer.push(strGCode);
+  }
+
+  m_lastCommandTimestamp = millis();
 }
 
 void GCodeSender::sendGCode(std::string gcode) {
-  addLineNumberAndChecksum(gcode);
   m_resendBuffer.push(gcode);
-  sendGCodeForce(gcode);
+  sendGCodeForce(gcode, m_resendBuffer.getWritePtr());
 }
 
-bool GCodeSender::bufferGCode(std::string& gcode) {
-  if (!m_buffer.full()) {
-    m_buffer.push(gcode);
-    return true;
-  }
+void GCodeSender::reset() {
+  m_sendMutex.lock();
+  m_resendCounter = 0;
+  m_timeoutCounter = 0;
 
-  return false;
+  m_buffer.reset();
+  m_resendBuffer.reset();
+  sendGCodeForce("M110 N0", 0);
+  m_sendMutex.unlock();
 }
 
 void GCodeSender::handleOK(int plannerBuffer, int commandBuffer, int64_t lineNumber) {
-  if (lineNumber >= 0) {
+  m_sendMutex.lock();
+  ok(plannerBuffer, commandBuffer, lineNumber);
+  m_sendMutex.unlock();
+}
+
+void GCodeSender::ok(int plannerBuffer, int commandBuffer, int64_t lineNumber) {
+  m_lastCommandTimestamp = millis();
+
+  if (lineNumber >= m_resendBuffer.getReadPtr() && lineNumber <= m_resendBuffer.getWritePtr()) {
     m_resendBuffer.setReadPtr(lineNumber + 1);
-    if (m_resend)
-      m_resend = !m_resendBuffer.empty();
   }
-
-  m_curPlannerBufferSize = plannerBuffer;
-  m_curCommandBufferSize = commandBuffer;
-
-  if (plannerBuffer > m_maxPlannerBufferSize)
-    m_maxPlannerBufferSize = plannerBuffer;
-  if (commandBuffer > m_maxCommandBufferSize){
-    m_maxCommandBufferSize = commandBuffer;
-    m_resendBuffer = util::RingBuffer<std::string>(commandBuffer - RESERVED_PRINTER_GCODE_BUFFER);
-  }
-        
 }
 
 void GCodeSender::handleResend(uint64_t lineNumber) {
-  m_resendBuffer.setReadPtr(lineNumber);
-  m_resend = true;
-  m_resendCounter++;
+  m_sendMutex.lock();
+  m_lastCommandTimestamp = millis();
+  if (m_resendBuffer.getWritePtr() >= lineNumber) {
+    if (m_resendBuffer.getReadPtr() > lineNumber) {
+      m_resendBuffer.setReadPtr(lineNumber);
+    }
+    m_resendLineNumber = lineNumber;
+    m_resendCounter++;
+  }
+  m_sendMutex.unlock();
+}
+
+void GCodeSender::handleBusy() {
+  m_sendMutex.lock();
+  m_lastCommandTimestamp = millis();
+  m_sendMutex.unlock();
 }

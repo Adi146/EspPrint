@@ -2,11 +2,12 @@ esphome:
   name: espprint
   platform: ESP32
   board: nodemcu-32s
+  arduino_version: latest
   includes: !include include.yaml
   on_boot:
     - lambda: SD_MMC.begin();
     - delay: 4s
-    - lambda: get_sender(id(gcode_sender))->sendGCodeForce("M110 N0");
+    - lambda: get_sender(id(gcode_sender))->reset();
     - lambda: get_sender(id(gcode_sender))->sendGCode("M117 EspPrint Connected");
     - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
 
@@ -36,7 +37,7 @@ api:
       variables:
         gcode: string
       then:
-        - lambda: get_sdSender(id(gcode_sender))->sendGCodeForce(gcode);
+        - lambda: get_sdSender(id(gcode_sender))->sendGCode(gcode);
     - service: print_file
       variables:
         file: string
@@ -60,7 +61,7 @@ uart:
 custom_component:
 - id: gcode_sender
   lambda: |-
-    auto sender = new SDGCodeSender(id(uart_bus), SD_MMC);
+    auto sender = new SDGCodeSender(id(uart_bus), 25, SD_MMC);
     return {sender};
 - id: gcode_reader
   lambda: |-

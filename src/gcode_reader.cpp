@@ -40,7 +40,7 @@ bool GCodeReader::readLine(std::string* line) {
 }
 
 bool GCodeReader::handleOK(std::string& line) {
-std::smatch match;
+  std::smatch match;
   if (std::regex_match(line, match, m_okRgx)) {
     int64_t lineNumber = match[2].matched ? atoi(match[2].str().c_str()) : -1;
     int plannerBuffer = atoi(match[4].str().c_str());
@@ -63,11 +63,20 @@ bool GCodeReader::handleResend(std::string& line) {
   return false;
 }
 
+bool GCodeReader::handleBusy(std::string& line) {
+  if (line == m_busyStr) {
+    m_sender->handleBusy();
+    return true;
+  }
+
+  return false;
+}
+
 void GCodeReader::threadLoop() {
   std::string line;
 
   if (readLine(&line)) {
-    handleOK(line) || handleResend(line);
+    handleOK(line) || handleBusy(line) || handleResend(line);
 
     if(!m_sensorBuffer.full())
       m_sensorBuffer.push(line);

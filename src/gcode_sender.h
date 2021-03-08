@@ -6,12 +6,10 @@
 #include "threading.h"
 #include "gcode_sensor.h"
 #include <string>
-#include <chrono>
+#include <mutex>
 #include <vector>
 
 #define BUFFER_SIZE 50
-#define RESEND_BUFFER_SIZE 50
-#define RESERVED_PRINTER_GCODE_BUFFER 5
 #define SENDER_SENSOR_BUFFER_SIZE 20
 
 using namespace sensors;
@@ -27,20 +25,22 @@ protected:
   util::RingBuffer<std::string> m_resendBuffer;
 
   int m_resendCounter = 0;
-  bool m_resend = false;
-
-  int m_curCommandBufferSize = 1;
-  int m_curPlannerBufferSize = 1; 
-  int m_maxCommandBufferSize = 1;
-  int m_maxPlannerBufferSize = 1;
+  int m_timeoutCounter = 0;
+  int64_t m_resendLineNumber = -1;
 
   std::vector<GCodeSensor*> m_sensors = std::vector<GCodeSensor*>();
   util::RingBuffer<std::string> m_sensorBuffer;
 
-  void addLineNumberAndChecksum(std::string& gcode);
+  uint32_t m_lastCommandTimestamp;
+
+  std::mutex m_sendMutex;
+
+  void ok(int plannerBuffer, int commandBuffer, int64_t lineNumber);
+
+  void sendGCodeForce(std::string gcode, uint64_t lineNumber);
 
 public:
-  GCodeSender(UARTComponent *parent);
+  GCodeSender(UARTComponent *parent, int resendBufferSize);
 
   void setup() override;
 
@@ -48,15 +48,15 @@ public:
 
   void threadLoop() override;
 
-  void sendGCodeForce(std::string gcode);
-
   void sendGCode(std::string gcode);
 
-  bool bufferGCode(std::string& gcode);
+  void reset();
 
   void handleOK(int plannerBuffer, int commandBuffer, int64_t lineNumber);
 
   void handleResend(uint64_t lineNumber);
+
+  void handleBusy();
 
   int getResendCounter() {
     return m_resendCounter;

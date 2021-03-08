@@ -20,7 +20,7 @@ private:
   std::string readNextGCode();
 
 public:
-  SDGCodeSender(UARTComponent *parent, fs::FS &fs);
+  SDGCodeSender(UARTComponent *parent, int resendBufferSize, fs::FS &fs);
 
   void loop() override;
 

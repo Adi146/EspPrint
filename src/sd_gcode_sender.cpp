@@ -1,6 +1,9 @@
 #include "sd_gcode_sender.h"
 
-SDGCodeSender::SDGCodeSender(UARTComponent *parent, fs::FS &fs) : GCodeSender(parent), m_fs(fs) {}
+SDGCodeSender::SDGCodeSender(UARTComponent *parent, int resendBufferSize, fs::FS &fs) :
+  GCodeSender(parent, resendBufferSize),
+  m_fs(fs) {
+}
 
 std::string SDGCodeSender::readNextGCode() {
   char buffer[128] = "";
@@ -27,7 +30,7 @@ void SDGCodeSender::loop() {
   if (m_file.available() && !m_buffer.full()) {
     std::string gcode = readNextGCode();
     if (!gcode.empty()) {
-      bufferGCode(gcode);
+      m_buffer.push(gcode);
     }
   }
 
@@ -48,9 +51,7 @@ void SDGCodeSender::print(std::string filename) {
     return;
   }
 
-  m_buffer.reset();
-  m_resendBuffer.reset();
-  sendGCodeForce("M110 N0");
+  reset();
 }
 
 void SDGCodeSender::stop() {
