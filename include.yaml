@@ -14,4 +14,7 @@
 - src/sensors/action_sensor.h
 - src/sensors/temperature_sensor.h
 - src/sensors/resend_sensor.h
+- src/sensors/timeout_sensor.h
 - src/sensors/file_sensor.h
+- src/sensors/planner_buffer_sensor.h
+- src/sensors/gcode_buffer_sensor.h

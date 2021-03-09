@@ -9,7 +9,7 @@
 #include <mutex>
 #include <vector>
 
-#define BUFFER_SIZE 50
+#define BUFFER_SIZE 20
 #define SENDER_SENSOR_BUFFER_SIZE 20
 
 using namespace sensors;
@@ -26,6 +26,9 @@ protected:
 
   int m_resendCounter = 0;
   int m_timeoutCounter = 0;
+  int m_okPlannerBuffer = 0;
+  int m_okGCodeBuffer = 0;
+
   int64_t m_resendLineNumber = -1;
 
   std::vector<GCodeSensor*> m_sensors = std::vector<GCodeSensor*>();
@@ -60,6 +63,18 @@ public:
 
   int getResendCounter() {
     return m_resendCounter;
+  }
+
+  int getTimeoutCounter() {
+    return m_timeoutCounter;
+  }
+
+  int getFreePlannerBuffer() {
+    return m_okPlannerBuffer;
+  }
+
+  int getFreeGCodeBuffer() {
+    return m_okGCodeBuffer;
   }
 
   void addSensor(GCodeSensor* sensor) {

@@ -100,6 +100,9 @@ void GCodeSender::ok(int plannerBuffer, int commandBuffer, int64_t lineNumber) {
   if (lineNumber >= m_resendBuffer.getReadPtr() && lineNumber <= m_resendBuffer.getWritePtr()) {
     m_resendBuffer.setReadPtr(lineNumber + 1);
   }
+  
+  m_okGCodeBuffer = commandBuffer;
+  m_okPlannerBuffer = plannerBuffer;
 }
 
 void GCodeSender::handleResend(uint64_t lineNumber) {

@@ -61,7 +61,7 @@ uart:
 custom_component:
 - id: gcode_sender
   lambda: |-
-    auto sender = new SDGCodeSender(id(uart_bus), 25, SD_MMC);
+    auto sender = new SDGCodeSender(id(uart_bus), 4, SD_MMC);
     return {sender};
 - id: gcode_reader
   lambda: |-
@@ -119,7 +119,32 @@ sensor:
     return {resend};
   sensors:
   - name: "Print Resends"
-    unit_of_measurement: "number"    
+    unit_of_measurement: "number"
+- platform: custom
+  lambda: |-
+    auto timeouts = new sensors::TimeoutSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(timeouts);
+    return {timeouts};
+  sensors:
+  - name: "Print Timeouts"
+    unit_of_measurement: "number"
+- platform: custom
+  lambda: |-
+    auto planner = new sensors::PlannerBufferSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(planner);
+    return {planner};
+  sensors:
+  - name: "Printer Planner Buffer"
+    unit_of_measurement: "number"
+- platform: custom
+  lambda: |-
+    auto gcode = new sensors::GCodeBufferSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(gcode);
+    return {gcode};
+  sensors:
+  - name: "Printer GCode Buffer"
+    unit_of_measurement: "number"
+
 
 text_sensor:
 - platform: custom
