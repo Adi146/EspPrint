@@ -12,7 +12,13 @@ namespace sensors{
     FileSensor(SDGCodeSender* sender): PollingComponent(10000), m_sender(sender) {}
 
     void update() override {
-      publish_state(m_sender->getFilename());
+      auto val = m_sender->getFilename();
+      if (val == "") {
+        publish_state("None");
+      } 
+      else {
+        publish_state(m_sender->getFilename());
+      }
     }
   };
 }
