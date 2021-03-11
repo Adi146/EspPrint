@@ -64,7 +64,7 @@ bool GCodeReader::handleResend(std::string& line) {
 }
 
 bool GCodeReader::handleBusy(std::string& line) {
-  if (line == m_busyStr) {
+  if (line.rfind(m_busyStr, 0) == 0) {
     m_sender->handleBusy();
     return true;
   }

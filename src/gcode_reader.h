@@ -20,7 +20,7 @@ class GCodeReader : public Component, public UARTDevice, public util::Threading 
 private:
   std::regex m_okRgx = std::regex(R"(^ok (N(\d+) )?(P(\d+)) (B(\d+))$)");
   std::regex m_resendRgx = std::regex(R"(Resend: (\d+))");
-  std::string m_busyStr = "echo:busy: processing";
+  std::string m_busyStr = "echo:busy:";
 
   std::vector<GCodeSensor*> m_sensors = std::vector<GCodeSensor*>();
 
