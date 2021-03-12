@@ -13,15 +13,12 @@ namespace sensors{
 
     ProgressSensor(): GCodeSensor() {}
 
-    bool handleLine(std::string& gcode) override {
+    void handleLine(std::string& gcode) override {
       std::smatch match;
       if (std::regex_search(gcode, match, m_M73Rgx)) {
         m_printProgress.publish_state(atoi(match[1].str().c_str()));
         m_remainingTime.publish_state(atoi(match[2].str().c_str()));
-        return true;
       }
-
-      return false;
     }
   };
 }

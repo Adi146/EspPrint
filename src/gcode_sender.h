@@ -9,7 +9,7 @@
 #include <mutex>
 #include <vector>
 
-#define BUFFER_SIZE 20
+#define BUFFER_SIZE 50
 #define SENDER_SENSOR_BUFFER_SIZE 20
 
 using namespace sensors;

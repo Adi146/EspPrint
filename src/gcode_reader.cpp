@@ -17,8 +17,7 @@ void GCodeReader::loop() {
     ESP_LOGI("gcode_reader", "RECV: %s", line.c_str());
 
     for (auto sensor: m_sensors) {
-      if (sensor->handleLine(line))
-        break;
+      sensor->handleLine(line);
     } 
   }
 }

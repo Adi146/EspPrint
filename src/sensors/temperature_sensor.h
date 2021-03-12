@@ -17,7 +17,7 @@ namespace sensors{
       }
     }
 
-    bool handleLine(std::string& gcode) override {
+    void handleLine(std::string& gcode) override {
       auto begin = std::sregex_iterator(gcode.begin(), gcode.end(), m_temperatureRgx);
       auto end = std::sregex_iterator();
   
@@ -31,8 +31,6 @@ namespace sensors{
         m_temperatures[tempIndex]->publish_state(currentTemp);
         m_temperatures[tempIndex + 1]->publish_state(targetTemp);
       }
-  
-      return begin != end;
     }
   };
 }

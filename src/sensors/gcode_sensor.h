@@ -9,6 +9,6 @@ namespace sensors {
   public:
     GCodeSensor(): Component() {}
 
-    virtual bool handleLine(std::string& gcode) = 0;
+    virtual void handleLine(std::string& gcode) = 0;
   };
 }

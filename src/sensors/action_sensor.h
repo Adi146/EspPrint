@@ -10,13 +10,10 @@ namespace sensors{
   public:
     ActionSensor(): GCodeSensor(), TextSensor() {}
 
-    bool handleLine(std::string& gcode) override {
+    void handleLine(std::string& gcode) override {
       if (gcode.rfind(m_actionStr, 0) == 0) {
         publish_state(gcode.substr(m_actionStr.length()));
-        return true;
       }
-
-      return false;
     }
   };
 }

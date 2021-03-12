@@ -8,7 +8,6 @@ esphome:
     - lambda: SD_MMC.begin();
     - delay: 4s
     - lambda: get_sender(id(gcode_sender))->reset();
-    - lambda: get_sender(id(gcode_sender))->sendGCode("M117 EspPrint Connected");
     - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
 
 wifi:
@@ -72,6 +71,16 @@ custom_component:
     auto upload = new util::UploadServer(id(upload_server_base), get_sdSender(id(gcode_sender)));
     App.register_component(upload);
     return {upload};
+- id: events
+  lambda: |-
+    auto sendEvents = new sensors::GCodeEvents("SEND", get_sdSender(id(gcode_sender)));
+    auto receiveEvents = new sensors::GCodeEvents("RECV", get_sdSender(id(gcode_sender)));
+    App.register_component(sendEvents);
+    App.register_component(receiveEvents);
+    get_sdSender(id(gcode_sender))->addSensor(sendEvents);
+    get_reader(id(gcode_reader))->addSensor(receiveEvents);
+    return {sendEvents, receiveEvents};
+
 
 sensor:
 - platform: custom
