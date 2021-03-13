@@ -27,12 +27,14 @@ std::string SDGCodeSender::readNextGCode() {
 }
 
 void SDGCodeSender::loop() {
+  m_bufferMutex.lock();
   if (m_file.available() && !m_buffer.full()) {
     std::string gcode = readNextGCode();
     if (!gcode.empty()) {
       m_buffer.push(gcode);
     }
   }
+  m_bufferMutex.unlock();
 
   GCodeSender::loop();
 }

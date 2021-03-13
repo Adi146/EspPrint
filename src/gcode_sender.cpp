@@ -37,8 +37,12 @@ void GCodeSender::threadLoop() {
       m_resendLineNumber++;
     }
   } 
-  else if (!m_buffer.empty() && !m_resendBuffer.full()) {
-    sendGCode(m_buffer.pop());
+  else {
+    m_bufferMutex.lock();
+    if (!m_buffer.empty() && !m_resendBuffer.full()) {
+      sendGCode(m_buffer.pop());
+    }
+    m_bufferMutex.unlock();
   }
 
   if (!m_resendBuffer.empty() && millis() - m_lastCommandTimestamp > 10000) {   
@@ -78,12 +82,14 @@ void GCodeSender::sendGCode(std::string gcode) {
 
 void GCodeSender::reset() {
   m_sendMutex.lock();
+  m_bufferMutex.lock();
   m_resendCounter = 0;
   m_timeoutCounter = 0;
 
   m_buffer.reset();
   m_resendBuffer.reset();
   sendGCodeForce("M110 N0", 0);
+  m_bufferMutex.unlock();
   m_sendMutex.unlock();
 }
 

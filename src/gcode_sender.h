@@ -37,6 +37,7 @@ protected:
   uint32_t m_lastCommandTimestamp;
 
   std::mutex m_sendMutex;
+  std::mutex m_bufferMutex;
 
   void ok(int plannerBuffer, int commandBuffer, int64_t lineNumber);
 
