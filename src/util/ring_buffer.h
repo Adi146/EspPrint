@@ -15,7 +15,7 @@ namespace util {
         this->capacity = capacity;
     }
   
-    void push(T& val) {
+    void push(const T& val) {
       buffer[++write_ptr % capacity] = val;
     }
   

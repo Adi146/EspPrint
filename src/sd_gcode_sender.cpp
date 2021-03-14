@@ -57,11 +57,13 @@ void SDGCodeSender::print(std::string filename) {
 }
 
 void SDGCodeSender::stop() {
+  m_bufferMutex.lock();
   m_file.close();
-  m_buffer.reset();
+  m_buffer.setReadPtr(m_buffer.getWritePtr());
 
-  sendGCode("M104 S0");
-  sendGCode("M140 S0");
-  sendGCode("G28 X Y");
-  sendGCode("M84");
+  m_buffer.push("M104 S0");
+  m_buffer.push("M140 S0");
+  m_buffer.push("G28 X Y");
+  m_buffer.push("M84");
+  m_bufferMutex.unlock();
 }
