@@ -6,6 +6,7 @@ light:
   - platform: binary
     output: gpio_4
     name: Flash Light
+    internal: true
 
 #esp32_camera:
 #  name: Printer Camera
