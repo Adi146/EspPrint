@@ -1,0 +1,43 @@
+sensor:
+- platform: uptime
+  name: "${printer_name} ESP Uptime"
+- platform: custom
+  lambda: |-
+    auto memory = new sensors::MemorySensor();
+    App.register_component(memory);
+    return {memory};
+  sensors:
+  - name: "${printer_name} ESP Free Memory"
+    unit_of_measurement: "bytes"
+- platform: custom
+  lambda: |-
+    auto resend = new sensors::ResendSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(resend);
+    return {resend};
+  sensors:
+  - name: "${printer_name} Print Resends"
+    unit_of_measurement: "number"
+- platform: custom
+  lambda: |-
+    auto timeouts = new sensors::TimeoutSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(timeouts);
+    return {timeouts};
+  sensors:
+  - name: "${printer_name} Print Timeouts"
+    unit_of_measurement: "number"
+- platform: custom
+  lambda: |-
+    auto planner = new sensors::PlannerBufferSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(planner);
+    return {planner};
+  sensors:
+  - name: "${printer_name} Printer Planner Buffer"
+    unit_of_measurement: "number"
+- platform: custom
+  lambda: |-
+    auto gcode = new sensors::GCodeBufferSensor(get_sdSender(id(gcode_sender)));
+    App.register_component(gcode);
+    return {gcode};
+  sensors:
+  - name: "${printer_name} Printer GCode Buffer"
+    unit_of_measurement: "number"
