@@ -35,6 +35,6 @@
 
 secrets.yaml
 .esphome
-espprint
+espprint_*/
 
 *.log

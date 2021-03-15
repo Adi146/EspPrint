@@ -29,7 +29,8 @@ class TerminalCard extends HTMLElement {
       this.eventData = [];
 
       this.form.onsubmit = () => {
-        this._hass.callService("esphome", "espprint_send_gcode", {
+        const [domain, service] = this.config.service.split('.', 2);
+        this._hass.callService(domain, service, {
           gcode: this.input.value
         });
         this.input.value = '';
@@ -42,11 +43,18 @@ class TerminalCard extends HTMLElement {
         this.console.innerHTML += 
           "[" + date.toLocaleTimeString('en-US') + "]: " + event.data.method + ": " + event.data.gcode + "<br>";
           this.console.scrollTop = this.console.scrollHeight;
-      }, 'esphome.gcode-event');
+      }, this.config.event);
     }
   }
 
   setConfig(config) {
+    if (!config.event) {
+      throw new Error('You need to define event');
+    }
+    if (!config.service) {
+      throw new Error('You need to define service');
+    }
+
     this.config = config;
   }
 }

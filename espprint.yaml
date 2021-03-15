@@ -1,5 +1,9 @@
+substitutions:
+  printer_name: Sapphire Plus
+  printer_name_short: sapphire_plus
+
 esphome:
-  name: espprint
+  name: espprint_${printer_name_short}
   platform: ESP32
   board: nodemcu-32s
   arduino_version: latest
@@ -16,7 +20,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Printer Fallback Hotspot"
+    ssid: "${printer_name} Fallback Hotspot"
     password: !secret fallback_password
 
 captive_portal:
@@ -29,9 +33,6 @@ logger:
 # Enable Home Assistant API
 api:
   services:
-    - service: home
-      then:
-        - lambda: get_sdSender(id(gcode_sender))->sendGCode("G28");
     - service: send_gcode
       variables:
         gcode: string
@@ -73,8 +74,8 @@ custom_component:
     return {upload};
 - id: events
   lambda: |-
-    auto sendEvents = new sensors::GCodeEvents("SEND", get_sdSender(id(gcode_sender)));
-    auto receiveEvents = new sensors::GCodeEvents("RECV", get_sdSender(id(gcode_sender)));
+    auto sendEvents = new sensors::GCodeEvents("${printer_name_short}", "SEND", get_sdSender(id(gcode_sender)));
+    auto receiveEvents = new sensors::GCodeEvents("${printer_name_short}", "RECV", get_sdSender(id(gcode_sender)));
     App.register_component(sendEvents);
     App.register_component(receiveEvents);
     get_sdSender(id(gcode_sender))->addSensor(sendEvents);
@@ -89,16 +90,16 @@ sensor:
     get_reader(id(gcode_reader))->addSensor(temperature);
     return temperature->m_temperatures;
   sensors:
-  - name: "Tool Current Temperature"
+  - name: "${printer_name} Tool Current Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
-  - name: "Tool Target Temperature"
+  - name: "${printer_name} Tool Target Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
-  - name: "Bed Current Temperature"
+  - name: "${printer_name} Bed Current Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
-  - name: "Bed Target Temperature"
+  - name: "${printer_name} Bed Target Temperature"
     unit_of_measurement: °C
     accuracy_decimals: 2
 - platform: custom
@@ -107,19 +108,19 @@ sensor:
     get_sdSender(id(gcode_sender))->addSensor(progress);
     return {&progress->m_printProgress, &progress->m_remainingTime};
   sensors:
-  - name: "Print Progress"
+  - name: "${printer_name} Print Progress"
     unit_of_measurement: "%"
-  - name: "Remaining Time"
+  - name: "${printer_name} Remaining Time"
     unit_of_measurement: "min"
 - platform: uptime
-  name: Uptime
+  name: "${printer_name} ESP Uptime"
 - platform: custom
   lambda: |-
     auto memory = new sensors::MemorySensor();
     App.register_component(memory);
     return {memory};
   sensors:
-  - name: "ESP Free Memory"
+  - name: "${printer_name} ESP Free Memory"
     unit_of_measurement: "bytes"
 - platform: custom
   lambda: |-
@@ -127,7 +128,7 @@ sensor:
     App.register_component(resend);
     return {resend};
   sensors:
-  - name: "Print Resends"
+  - name: "${printer_name} Print Resends"
     unit_of_measurement: "number"
 - platform: custom
   lambda: |-
@@ -135,7 +136,7 @@ sensor:
     App.register_component(timeouts);
     return {timeouts};
   sensors:
-  - name: "Print Timeouts"
+  - name: "${printer_name} Print Timeouts"
     unit_of_measurement: "number"
 - platform: custom
   lambda: |-
@@ -143,7 +144,7 @@ sensor:
     App.register_component(planner);
     return {planner};
   sensors:
-  - name: "Printer Planner Buffer"
+  - name: "${printer_name} Printer Planner Buffer"
     unit_of_measurement: "number"
 - platform: custom
   lambda: |-
@@ -151,9 +152,8 @@ sensor:
     App.register_component(gcode);
     return {gcode};
   sensors:
-  - name: "Printer GCode Buffer"
+  - name: "${printer_name} Printer GCode Buffer"
     unit_of_measurement: "number"
-
 
 text_sensor:
 - platform: custom
@@ -162,13 +162,13 @@ text_sensor:
     get_reader(id(gcode_reader))->addSensor(action);
     return {action};
   text_sensors:
-  - name: "Last Action"
+  - name: "${printer_name} Current Action"
 - platform: custom
   lambda: |-
     auto file = new sensors::FileSensor(get_sdSender(id(gcode_sender)));
     App.register_component(file);
     return {file};
   text_sensors:
-  - name: "Current File"
+  - name: "${printer_name} Current File"
 
 <<: !include camera.yaml
