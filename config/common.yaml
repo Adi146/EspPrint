@@ -30,15 +30,19 @@ sensor:
     return temperature->m_temperatures;
   sensors:
   - name: "${printer_name} Tool Current Temperature"
+    id: tool_current_temp
     unit_of_measurement: °C
     accuracy_decimals: 2
   - name: "${printer_name} Tool Target Temperature"
+    id: tool_target_temp
     unit_of_measurement: °C
     accuracy_decimals: 2
   - name: "${printer_name} Bed Current Temperature"
+    id: bed_current_temp
     unit_of_measurement: °C
     accuracy_decimals: 2
   - name: "${printer_name} Bed Target Temperature"
+    id: bed_target_temp
     unit_of_measurement: °C
     accuracy_decimals: 2
 - platform: custom

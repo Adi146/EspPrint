@@ -1,0 +1,27 @@
+light:
+- platform: fastled_clockless
+  name: ${printer_name} Lights
+  id: my_light
+  chipset: WS2812B
+  pin: GPIO16
+  num_leds: 18
+  rgb_order: GRB
+  effects:
+  - addressable_lambda:
+      name: Bed Heatup
+      update_interval: 4s
+      lambda: |-
+        float tempDelta = abs(id(bed_target_temp)->get_state() - id(bed_current_temp)->get_state());
+        float percentage = 1.0f - ((1.0f / id(bed_target_temp)->get_state()) * tempDelta);
+        percentage = clamp(percentage, 0.0f, 1.0f);
+
+        it.all() = ESPColor(255 * percentage, 0 , 255);
+  - addressable_lambda:
+      name: Tool Heatup
+      update_interval: 4s
+      lambda: |-
+        float tempDelta = abs(id(tool_target_temp)->get_state() - id(tool_current_temp)->get_state());
+        float percentage = 1.0f - ((1.0f / id(tool_target_temp)->get_state()) * tempDelta);
+        percentage = clamp(percentage, 0.0f, 1.0f);
+
+        it.all() = ESPColor(255, 0 , 255 * (1.0f - percentage));

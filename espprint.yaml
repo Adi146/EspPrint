@@ -62,3 +62,4 @@ packages:
   common: !include config/common.yaml
   debug: !include config/debug.yaml
   camera: !include config/camera.yaml
+  lights: !include config/lights.yaml
