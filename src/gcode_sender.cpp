@@ -33,14 +33,16 @@ void GCodeSender::threadLoop() {
 
     if (m_resendLineNumber == m_resendBuffer.getReadPtr()) {
       auto gcode = m_resendBuffer.peek();
-      sendGCodeForce(gcode, m_resendLineNumber);
+      _sendGCode(gcode, m_resendLineNumber);
       m_resendLineNumber++;
     }
   } 
   else {
     m_bufferMutex.lock();
     if (!m_buffer.empty() && !m_resendBuffer.full()) {
-      sendGCode(m_buffer.pop());
+      auto gcode = m_buffer.pop();
+      m_resendBuffer.push(gcode);
+      _sendGCode(gcode, m_resendBuffer.getWritePtr());
     }
     m_bufferMutex.unlock();
   }
@@ -53,7 +55,7 @@ void GCodeSender::threadLoop() {
   m_sendMutex.unlock();
 }
 
-void GCodeSender::sendGCodeForce(std::string gcode, uint64_t lineNumber) {
+void GCodeSender::_sendGCode(std::string gcode, uint64_t lineNumber) {
   char buffer[156] = "";
   snprintf(buffer, sizeof(buffer), "N%llu %s", lineNumber, gcode.c_str());
 
@@ -76,8 +78,9 @@ void GCodeSender::sendGCodeForce(std::string gcode, uint64_t lineNumber) {
 }
 
 void GCodeSender::sendGCode(std::string gcode) {
-  m_resendBuffer.push(gcode);
-  sendGCodeForce(gcode, m_resendBuffer.getWritePtr());
+  m_bufferMutex.lock();
+  m_buffer.push(gcode);
+  m_bufferMutex.unlock();
 }
 
 void GCodeSender::reset() {
@@ -88,7 +91,7 @@ void GCodeSender::reset() {
 
   m_buffer.reset();
   m_resendBuffer.reset();
-  sendGCodeForce("M110 N0", 0);
+  _sendGCode("M110 N0", 0);
   m_bufferMutex.unlock();
   m_sendMutex.unlock();
 }

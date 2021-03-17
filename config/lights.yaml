@@ -11,8 +11,8 @@ light:
       name: Bed Heatup
       update_interval: 4s
       lambda: |-
-        float tempDelta = abs(id(bed_target_temp)->get_state() - id(bed_current_temp)->get_state());
-        float percentage = 1.0f - ((1.0f / id(bed_target_temp)->get_state()) * tempDelta);
+        float tempDelta = abs(id(bed_temp)->target_temperature - id(bed_temp)->current_temperature);
+        float percentage = 1.0f - ((1.0f / id(bed_temp)->target_temperature) * tempDelta);
         percentage = clamp(percentage, 0.0f, 1.0f);
 
         it.all() = ESPColor(255 * percentage, 0 , 255);
@@ -20,8 +20,8 @@ light:
       name: Tool Heatup
       update_interval: 4s
       lambda: |-
-        float tempDelta = abs(id(tool_target_temp)->get_state() - id(tool_current_temp)->get_state());
-        float percentage = 1.0f - ((1.0f / id(tool_target_temp)->get_state()) * tempDelta);
+        float tempDelta = abs(id(tool_temp)->target_temperature - id(tool_temp)->current_temperature);
+        float percentage = 1.0f - ((1.0f / id(tool_temp)->target_temperature) * tempDelta);
         percentage = clamp(percentage, 0.0f, 1.0f);
 
         it.all() = ESPColor(255, 0 , 255 * (1.0f - percentage));

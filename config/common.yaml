@@ -22,29 +22,27 @@ custom_component:
     get_reader(id(gcode_reader))->addSensor(receiveEvents);
     return {sendEvents, receiveEvents};
 
-sensor:
+climate:
 - platform: custom
   lambda: |-
-    auto temperature = new sensors::TemperatureSensor(2);
+    auto temperature = new sensors::TemperatureSensor(2, get_sdSender(id(gcode_sender)));
     get_reader(id(gcode_reader))->addSensor(temperature);
-    return temperature->m_temperatures;
-  sensors:
-  - name: "${printer_name} Tool Current Temperature"
-    id: tool_current_temp
-    unit_of_measurement: °C
-    accuracy_decimals: 2
-  - name: "${printer_name} Tool Target Temperature"
-    id: tool_target_temp
-    unit_of_measurement: °C
-    accuracy_decimals: 2
-  - name: "${printer_name} Bed Current Temperature"
-    id: bed_current_temp
-    unit_of_measurement: °C
-    accuracy_decimals: 2
-  - name: "${printer_name} Bed Target Temperature"
-    id: bed_target_temp
-    unit_of_measurement: °C
-    accuracy_decimals: 2
+    return temperature->getClimates();
+  climates:
+  - name: "${printer_name} Tool Temperature"
+    id: tool_temp
+    visual:
+      min_temperature: 0 °C
+      max_temperature: 250 °C
+      temperature_step: 1 °C
+  - name: "${printer_name} Bed Temperature"
+    id: bed_temp
+    visual:
+      min_temperature: 0 °C
+      max_temperature: 80 °C
+      temperature_step: 1 °C
+
+sensor:
 - platform: custom
   lambda: |-
     auto progress = new sensors::ProgressSensor();

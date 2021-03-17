@@ -41,7 +41,7 @@ protected:
 
   void ok(int plannerBuffer, int commandBuffer, int64_t lineNumber);
 
-  void sendGCodeForce(std::string gcode, uint64_t lineNumber);
+  void _sendGCode(std::string gcode, uint64_t lineNumber);
 
 public:
   GCodeSender(UARTComponent *parent, int resendBufferSize);
