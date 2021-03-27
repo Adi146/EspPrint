@@ -23,9 +23,10 @@ To compensate the lower power of the ESP compared to the Rasperry Pi, the firmwa
 Here are the firmware features in the Marlin configuration which have to be enabled:
 * ADVANCED_OK
 * AUTO_REPORT_TEMPERATURES
-* HOST_ACTION_COMMANDS
 * BUFSIZE 32
 * RX_BUFFER_SIZE 2048
+Optional:
+* HOST_ACTION_COMMANDS
 
 ## Installation
 1. [Install Python and ESPHome](https://esphome.io/guides/getting_started_command_line.html)
@@ -41,6 +42,7 @@ esphome espprint.yaml run
 ## Tested Environments
 ### Printer Boards
 * MKS Robin Nano V1.2
+* BTT SKR 1.4
 ### Printer Firmware
 * Marlin 2.0
 ### ESPs
