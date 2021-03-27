@@ -25,6 +25,7 @@ Here are the firmware features in the Marlin configuration which have to be enab
 * AUTO_REPORT_TEMPERATURES
 * BUFSIZE 32
 * RX_BUFFER_SIZE 2048
+* 
 Optional:
 * HOST_ACTION_COMMANDS
 
