@@ -1,11 +1,11 @@
 - src/gcode_sender.h
 - src/gcode_sender.cpp
-- src/sd_gcode_sender.h
-- src/sd_gcode_sender.cpp
 - src/gcode_reader.h
 - src/gcode_reader.cpp
-- src/util/upload_server.h
-- src/util/upload_server.cpp
+- src/storage/sd_gcode_sender.h
+- src/storage/sd_gcode_sender.cpp
+- src/storage/upload_server.h
+- src/storage/upload_server.cpp
 - src/util/ring_buffer.h
 - src/util/threading.h
 - src/sensors/gcode_sensor.h

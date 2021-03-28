@@ -6,10 +6,13 @@
 namespace sensors{
   class FileSensor: public PollingComponent, public TextSensor {
   private:
-    SDGCodeSender* m_sender;
+    storage::SDGCodeSender* m_sender;
 
   public:
-    FileSensor(SDGCodeSender* sender): PollingComponent(10000), m_sender(sender) {}
+    FileSensor(storage::SDGCodeSender* sender): 
+      PollingComponent(10000), 
+      m_sender(sender) {  
+    }
 
     void update() override {
       auto val = m_sender->getFilename();

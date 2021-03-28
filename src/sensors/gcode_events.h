@@ -9,10 +9,10 @@ namespace sensors{
     std::string m_eventPrefix;
     std::string m_method;
 
-    SDGCodeSender* m_sender;
+    storage::SDGCodeSender* m_sender;
   
   public:
-    GCodeEvents(std::string eventPrefix, std::string method, SDGCodeSender* sender): 
+    GCodeEvents(std::string eventPrefix, std::string method, storage::SDGCodeSender* sender): 
       GCodeSensor(), 
       CustomAPIDevice(),
       m_eventPrefix(eventPrefix), 

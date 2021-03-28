@@ -1,5 +1,7 @@
 #include "sd_gcode_sender.h"
 
+using namespace storage;
+
 SDGCodeSender::SDGCodeSender(UARTComponent *parent, int resendBufferSize, fs::FS &fs) :
   GCodeSender(parent, resendBufferSize),
   m_fs(fs) {

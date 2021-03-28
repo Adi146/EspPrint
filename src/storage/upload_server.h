@@ -6,7 +6,7 @@
 
 using namespace esphome;
 
-namespace util {
+namespace storage {
   class UploadServer: public Component, public AsyncWebHandler {
   protected:
     web_server_base::WebServerBase* m_base;
