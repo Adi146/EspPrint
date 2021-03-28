@@ -18,7 +18,7 @@ void GCodeSender::loop() {
     ESP_LOGI("gcode_sender", "SEND: %s", line.c_str());
 
     for (auto sensor: m_sensors) {
-      sensor->handleLine(line);
+      sensor->handleLine(line, GCodeSource::SENDER);
     } 
   }
 }

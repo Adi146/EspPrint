@@ -40,8 +40,7 @@ class TerminalCard extends HTMLElement {
       this._hass.connection.subscribeEvents((event) => {
         var date = new Date(event.time_fired);
 
-        this.console.innerHTML += 
-          "[" + date.toLocaleTimeString('en-US') + "]: " + event.data.method + ": " + event.data.gcode + "<br>";
+        this.console.innerHTML += event.data.gcode.replaceAll('\n', "<br>");
           this.console.scrollTop = this.console.scrollHeight;
       }, this.config.event);
     }

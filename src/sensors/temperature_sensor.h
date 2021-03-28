@@ -91,7 +91,7 @@ namespace sensors{
       }
     }
 
-    void handleLine(std::string& gcode) override {
+    void handleLine(std::string& gcode, GCodeSource source) override {
       auto begin = std::sregex_iterator(gcode.begin(), gcode.end(), m_temperatureRgx);
       auto end = std::sregex_iterator();
   

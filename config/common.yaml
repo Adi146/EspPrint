@@ -14,13 +14,11 @@ custom_component:
     return {upload};
 - id: events
   lambda: |-
-    auto sendEvents = new sensors::GCodeEvents("${printer_name_short}", "SEND", get_sdSender(id(gcode_sender)));
-    auto receiveEvents = new sensors::GCodeEvents("${printer_name_short}", "RECV", get_sdSender(id(gcode_sender)));
-    App.register_component(sendEvents);
-    App.register_component(receiveEvents);
-    get_sdSender(id(gcode_sender))->addSensor(sendEvents);
-    get_reader(id(gcode_reader))->addSensor(receiveEvents);
-    return {sendEvents, receiveEvents};
+    auto events = new sensors::GCodeEvents("${printer_name_short}");
+    App.register_component(events);
+    get_sdSender(id(gcode_sender))->addSensor(events);
+    get_reader(id(gcode_reader))->addSensor(events);
+    return {events};
 
 climate:
 - platform: custom

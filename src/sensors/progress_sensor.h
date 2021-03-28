@@ -1,9 +1,10 @@
 #pragma once
 
+#include "esphome.h"
 #include "gcode_sensor.h"
 
 namespace sensors{
-  class ProgressSensor: public GCodeSensor {
+  class ProgressSensor: public GCodeSensor, public Component {
   private:
     std::regex m_M73Rgx = std::regex(R"(M73 P(\d+) R(\d+))");
 
@@ -13,7 +14,7 @@ namespace sensors{
 
     ProgressSensor(): GCodeSensor() {}
 
-    void handleLine(std::string& gcode) override {
+    void handleLine(std::string& gcode, GCodeSource source) override {
       std::smatch match;
       if (std::regex_search(gcode, match, m_M73Rgx)) {
         m_printProgress.publish_state(atoi(match[1].str().c_str()));
