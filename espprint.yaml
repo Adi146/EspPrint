@@ -1,6 +1,6 @@
 substitutions:
-  printer_name: Sapphire Plus
-  printer_name_short: sapphire_plus
+  printer_name: dev
+  printer_name_short: dev
 
 esphome:
   name: espprint_${printer_name_short}
@@ -57,6 +57,7 @@ uart:
   tx_pin: GPIO1
   rx_pin: GPIO3
   baud_rate: 115200
+  rx_buffer_size: 1024
 
 packages:
   common: !include config/common.yaml
