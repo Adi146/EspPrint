@@ -11,7 +11,7 @@ sensor:
     unit_of_measurement: "bytes"
 - platform: custom
   lambda: |-
-    auto resend = new sensors::ResendSensor(get_sdSender(id(gcode_sender)));
+    auto resend = new sensors::ResendSensor(get_sender(id(gcode_sender)));
     App.register_component(resend);
     return {resend};
   sensors:
@@ -19,7 +19,7 @@ sensor:
     unit_of_measurement: "number"
 - platform: custom
   lambda: |-
-    auto timeouts = new sensors::TimeoutSensor(get_sdSender(id(gcode_sender)));
+    auto timeouts = new sensors::TimeoutSensor(get_sender(id(gcode_sender)));
     App.register_component(timeouts);
     return {timeouts};
   sensors:
@@ -27,7 +27,7 @@ sensor:
     unit_of_measurement: "number"
 - platform: custom
   lambda: |-
-    auto planner = new sensors::PlannerBufferSensor(get_sdSender(id(gcode_sender)));
+    auto planner = new sensors::PlannerBufferSensor(get_sender(id(gcode_sender)));
     App.register_component(planner);
     return {planner};
   sensors:
@@ -35,7 +35,7 @@ sensor:
     unit_of_measurement: "number"
 - platform: custom
   lambda: |-
-    auto gcode = new sensors::GCodeBufferSensor(get_sdSender(id(gcode_sender)));
+    auto gcode = new sensors::GCodeBufferSensor(get_sender(id(gcode_sender)));
     App.register_component(gcode);
     return {gcode};
   sensors:

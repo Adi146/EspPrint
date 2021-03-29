@@ -1,7 +1,7 @@
 #pragma once
 
+#include "esphome.h"
 #include "gcode_sensor.h"
-#include "sd_gcode_sender.h"
 #include "ring_buffer.h"
 
 #define EVENTS_BUFFER_SIZE 100
