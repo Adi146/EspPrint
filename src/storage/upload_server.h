@@ -2,7 +2,7 @@
 
 #include "esphome.h"
 #include "FS.h"
-#include "sd_gcode_sender.h"
+#include "file_reader.h"
 
 using namespace esphome;
 
@@ -10,10 +10,10 @@ namespace storage {
   class UploadServer: public Component, public AsyncWebHandler {
   protected:
     web_server_base::WebServerBase* m_base;
-    SDGCodeSender* m_sender;
+    FileReader* m_fileReader;
 
   public:
-    UploadServer(web_server_base::WebServerBase* base, SDGCodeSender* sender);
+    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader);
 
     void setup() override;
 

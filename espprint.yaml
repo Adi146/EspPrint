@@ -8,11 +8,6 @@ esphome:
   board: nodemcu-32s
   arduino_version: latest
   includes: !include include.yaml
-  on_boot:
-    - lambda: SD_MMC.begin();
-    - delay: 4s
-    - lambda: get_sender(id(gcode_sender))->reset();
-    - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
 
 wifi:
   ssid: !secret wifi_ssid
@@ -27,30 +22,13 @@ captive_portal:
 
 # Enable logging
 logger:
-  baud_rate: 0
   level: INFO
 
 # Enable Home Assistant API
 api:
-  services:
-    - service: send_gcode
-      variables:
-        gcode: string
-      then:
-        - lambda: get_sdSender(id(gcode_sender))->sendGCode(gcode);
-    - service: print_file
-      variables:
-        file: string
-      then:
-        - lambda: get_sdSender(id(gcode_sender))->print(file);
-    - service: cancle_print
-      then:
-        - lambda: get_sdSender(id(gcode_sender))->stop();
+  services: []
 
 ota:
-
-web_server_base:
-  id: upload_server_base
 
 uart:
   id: uart_bus
@@ -61,6 +39,7 @@ uart:
 
 packages:
   common: !include config/common.yaml
+  storage: !include config/storage.yaml
   debug: !include config/debug.yaml
   camera: !include config/camera.yaml
   lights: !include config/lights.yaml

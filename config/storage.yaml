@@ -1,0 +1,39 @@
+esphome:
+  on_boot:
+    - lambda: SD_MMC.begin();
+
+api:
+  services:
+    - service: print_file
+      variables:
+        file: string
+      then:
+        - lambda: get_fileReader(id(file_reader))->print(file);
+    - service: cancle_print
+      then:
+        - lambda: get_fileReader(id(file_reader))->stop();
+
+web_server_base:
+  id: upload_server_base
+
+custom_component:
+- id: file_reader
+  lambda: |-
+    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), SD_MMC);
+    App.register_component(file_reader);
+    return {file_reader};
+- id: upload_server
+  lambda: |-
+    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)));
+    App.register_component(upload);
+    return {upload};
+
+text_sensor:
+- platform: custom
+  lambda: |-
+    auto file_sensor = new storage::FileSensor(get_fileReader(id(file_reader)));
+    App.register_component(file_sensor);
+    return {file_sensor};
+  text_sensors:
+  - name: "${printer_name} Current File"
+

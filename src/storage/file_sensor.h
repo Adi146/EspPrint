@@ -1,26 +1,26 @@
 #pragma once
 
 #include "esphome.h"
-#include "sd_gcode_sender.h"
+#include "file_reader.h"
 
-namespace sensors{
+namespace storage{
   class FileSensor: public PollingComponent, public TextSensor {
   private:
-    storage::SDGCodeSender* m_sender;
+    storage::FileReader* m_fileReader;
 
   public:
-    FileSensor(storage::SDGCodeSender* sender): 
+    FileSensor(FileReader* fileReader): 
       PollingComponent(10000), 
-      m_sender(sender) {  
+      m_fileReader(fileReader) {  
     }
 
     void update() override {
-      auto val = m_sender->getFilename();
+      auto val = m_fileReader->getFilename();
       if (val == "") {
         publish_state("None");
       } 
       else {
-        publish_state(m_sender->getFilename());
+        publish_state(m_fileReader->getFilename());
       }
     }
   };

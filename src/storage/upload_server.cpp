@@ -2,9 +2,9 @@
 
 using namespace storage;
 
-UploadServer::UploadServer(web_server_base::WebServerBase* base, SDGCodeSender* sender):  
+UploadServer::UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader):  
   m_base(base), 
-  m_sender(sender) {
+  m_fileReader(fileReader) {
 }
 
 void UploadServer::setup() {
@@ -28,7 +28,7 @@ void UploadServer::handleRequest(AsyncWebServerRequest *request) {
     auto printParam = request->getParam("print", true, false);
     auto fileParam = request->getParam("file", true, true);
     if (fileParam && printParam && printParam->value() == "true") {
-      m_sender->print(("/" + fileParam->value()).c_str());
+      m_fileReader->print(("/" + fileParam->value()).c_str());
     }
   }
 }
@@ -36,7 +36,7 @@ void UploadServer::handleRequest(AsyncWebServerRequest *request) {
 void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
   if (!index) {
     ESP_LOGI("upload", "Upload Request %s", filename.c_str());
-    request->_tempFile = m_sender->getFS().open('/' + filename, FILE_WRITE);
+    request->_tempFile = m_fileReader->getFS().open('/' + filename, FILE_WRITE);
   }
 
   if (!request->_tempFile) {

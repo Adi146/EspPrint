@@ -1,27 +1,26 @@
 #pragma once
 
 #include "gcode_sender.h"
-#include "gcode_sensor.h"
 #include "FS.h"
 #include "SD_MMC.h"
-#include <regex>
 
 using namespace esphome;
 using namespace esphome::custom_component;
-using namespace sensors;
 
-#define get_sdSender(constructor) static_cast<storage::SDGCodeSender *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
+#define get_fileReader(constructor) static_cast<storage::FileReader *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
 namespace storage {
-  class SDGCodeSender: public GCodeSender {
+  class FileReader: public Component{
   private:
+    GCodeSender* m_sender;
+
     File m_file;
     fs::FS m_fs;
 
     std::string readNextGCode();
 
   public:
-    SDGCodeSender(UARTComponent *parent, int resendBufferSize, fs::FS &fs);
+    FileReader(GCodeSender* sender, fs::FS &fs);
 
     void loop() override;
 

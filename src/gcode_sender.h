@@ -19,7 +19,13 @@ using namespace esphome::custom_component;
 
 #define get_sender(constructor) static_cast<GCodeSender *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
+namespace storage {
+  class FileReader;
+}
+
 class GCodeSender : public Component, public UARTDevice, public util::Threading {
+friend storage::FileReader;
+
 protected:
   util::RingBuffer<std::string> m_buffer;
   util::RingBuffer<std::string> m_resendBuffer;

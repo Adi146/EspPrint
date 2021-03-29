@@ -1,29 +1,43 @@
+esphome:
+  on_boot:
+    - delay: 4s
+    - lambda: get_sender(id(gcode_sender))->reset();
+    - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
+
+api:
+  services:
+    - service: send_gcode
+      variables:
+        gcode: string
+      then:
+        - lambda: get_sender(id(gcode_sender))->sendGCode(gcode);
+
+logger:
+  baud_rate: 0
+
 custom_component:
 - id: gcode_sender
   lambda: |-
-    auto sender = new storage::SDGCodeSender(id(uart_bus), 4, SD_MMC);
+    auto sender = new GCodeSender(id(uart_bus), 4);
+    App.register_component(sender);
     return {sender};
 - id: gcode_reader
   lambda: |-
-    auto reader = new GCodeReader(id(uart_bus), get_sdSender(id(gcode_sender)));
+    auto reader = new GCodeReader(id(uart_bus), get_sender(id(gcode_sender)));
+    App.register_component(reader);
     return {reader};
-- id: upload_server
-  lambda: |-
-    auto upload = new storage::UploadServer(id(upload_server_base), get_sdSender(id(gcode_sender)));
-    App.register_component(upload);
-    return {upload};
 - id: events
   lambda: |-
     auto events = new sensors::GCodeEvents("${printer_name_short}");
     App.register_component(events);
-    get_sdSender(id(gcode_sender))->addSensor(events);
+    get_sender(id(gcode_sender))->addSensor(events);
     get_reader(id(gcode_reader))->addSensor(events);
     return {events};
 
 climate:
 - platform: custom
   lambda: |-
-    auto temperature = new sensors::TemperatureSensor(2, get_sdSender(id(gcode_sender)));
+    auto temperature = new sensors::TemperatureSensor(2, get_sender(id(gcode_sender)));
     get_reader(id(gcode_reader))->addSensor(temperature);
     return temperature->getClimates();
   climates:
@@ -44,7 +58,7 @@ sensor:
 - platform: custom
   lambda: |-
     auto progress = new sensors::ProgressSensor();
-    get_sdSender(id(gcode_sender))->addSensor(progress);
+    get_sender(id(gcode_sender))->addSensor(progress);
     return {&progress->m_printProgress, &progress->m_remainingTime};
   sensors:
   - name: "${printer_name} Print Progress"
@@ -60,10 +74,3 @@ text_sensor:
     return {action};
   text_sensors:
   - name: "${printer_name} Current Action"
-- platform: custom
-  lambda: |-
-    auto file = new sensors::FileSensor(get_sdSender(id(gcode_sender)));
-    App.register_component(file);
-    return {file};
-  text_sensors:
-  - name: "${printer_name} Current File"
