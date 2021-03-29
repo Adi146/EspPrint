@@ -1,4 +1,10 @@
 esphome:
+  includes:
+    - src/storage/file_reader.h
+    - src/storage/file_reader.cpp
+    - src/storage/upload_server.h
+    - src/storage/upload_server.cpp
+    - src/storage/file_sensor.h
   on_boot:
     - lambda: SD_MMC.begin();
 

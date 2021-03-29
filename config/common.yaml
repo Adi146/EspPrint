@@ -1,4 +1,16 @@
 esphome:
+  includes:
+    - src/gcode_sender.h
+    - src/gcode_sender.cpp
+    - src/gcode_reader.h
+    - src/gcode_reader.cpp
+    - src/util/ring_buffer.h
+    - src/util/threading.h
+    - src/sensors/gcode_sensor.h
+    - src/sensors/progress_sensor.h
+    - src/sensors/action_sensor.h
+    - src/sensors/temperature_sensor.h
+    - src/sensors/gcode_events.h
   on_boot:
     - delay: 4s
     - lambda: get_sender(id(gcode_sender))->reset();

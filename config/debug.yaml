@@ -1,3 +1,11 @@
+esphome:
+  includes:
+    - src/sensors/memory_sensor.h
+    - src/sensors/resend_sensor.h
+    - src/sensors/timeout_sensor.h
+    - src/sensors/planner_buffer_sensor.h
+    - src/sensors/gcode_buffer_sensor.h
+
 sensor:
 - platform: uptime
   name: "${printer_name} ESP Uptime"
