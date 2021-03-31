@@ -5,6 +5,8 @@ esphome:
     - src/storage/upload_server.h
     - src/storage/upload_server.cpp
     - src/storage/file_sensor.h
+    - src/storage/filesystem.cpp
+    - src/storage/filesystem.h
   on_boot:
     - lambda: SD_MMC.begin();
 
@@ -33,6 +35,11 @@ custom_component:
     auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)));
     App.register_component(upload);
     return {upload};
+- id: list_fs
+  lambda: |-
+    auto fs = new storage::Filesystem(get_fileReader(id(file_reader)), "${printer_name_short}");
+    App.register_component(fs);
+    return {fs};
 
 text_sensor:
 - platform: custom
