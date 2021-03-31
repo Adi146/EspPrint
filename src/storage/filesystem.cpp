@@ -45,18 +45,15 @@ void Filesystem::setup() {
 }
 
 void Filesystem::fireListEvent() {
-  DynamicJsonBuffer jb;
+  DynamicJsonDocument doc(1024);
 
-  JsonArray& arr = jb.createArray();
-  for(auto it = m_files.begin(); it != m_files.end(); it++) {
-    JsonObject& obj = jb.createObject();
-    obj["path"] = it->path;
-    obj["size"] = it->size;
-    arr.add(obj);
+  for (auto i = 0; i < m_files.size(); i++) {
+    doc[i]["path"] = m_files[i].path;
+    doc[i]["size"] = m_files[i].size;
   }
 
   std::string tmp;
-  arr.printTo(tmp);
+  serializeJson(doc, tmp);
 
   fire_homeassistant_event("esphome." + m_eventPrefix + "_files", {
     {"files", tmp}

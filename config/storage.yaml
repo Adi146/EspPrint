@@ -7,6 +7,8 @@ esphome:
     - src/storage/file_sensor.h
     - src/storage/filesystem.cpp
     - src/storage/filesystem.h
+  libraries:
+    - ArduinoJson-esphomelib
   on_boot:
     - lambda: SD_MMC.begin();
 
