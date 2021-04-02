@@ -11,6 +11,8 @@ esphome:
     - src/sensors/action_sensor.h
     - src/sensors/temperature_sensor.h
     - src/sensors/gcode_events.h
+  libraries:
+    - ArduinoJson-esphomelib
   on_boot:
     - delay: 4s
     - lambda: get_sender(id(gcode_sender))->reset();

@@ -3,6 +3,7 @@
 #include "esphome.h"
 #include "gcode_sensor.h"
 #include "ring_buffer.h"
+#include "ArduinoJson.h"
 
 #define EVENTS_BUFFER_SIZE 100
 
@@ -36,17 +37,22 @@ namespace sensors{
     }
 
     void update() override {
-      std::string tmp = "";
+      DynamicJsonDocument doc(1024);
+
+      auto i = 0;
       while (!m_buffer.empty()) {
         auto elem = m_buffer.pop();
-        tmp += elem.source == GCodeSource::READER ? "RECV: " : "SEND: ";
-        tmp += elem.gcode;
-        tmp += '\n';
+        doc[i]["gcode"] = elem.gcode;
+        doc[i]["source"] = elem.source == GCodeSource::READER ? "RECV" : "SEND";
+        i++;
       }
 
-      if (tmp != "") {
+      std::string tmp;
+      serializeJson(doc, tmp);
+
+      if (i != 0) {
         fire_homeassistant_event("esphome." + m_eventPrefix + "_gcode_event", {
-          {"gcode", tmp}
+          {"gcodes", tmp}
         });
       }
     }
