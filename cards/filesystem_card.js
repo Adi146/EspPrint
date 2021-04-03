@@ -22,7 +22,7 @@ class FilesystemCard extends LitElement {
   render() {
     return html`
       <ha-card header="Files">
-        <div>
+        <div class="file_list">
           ${this.files.map(file => {
             return html`
               <div class="file_entry">
@@ -103,6 +103,10 @@ class FilesystemCard extends LitElement {
 
   static get styles() {
     return css`
+      .file_list {
+        overflow: auto;
+        height: 400px;
+      }
       .file_entry {
         padding-bottom: 10px;
         padding-left: 5px;
