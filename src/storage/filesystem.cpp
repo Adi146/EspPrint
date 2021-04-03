@@ -45,7 +45,7 @@ void Filesystem::setup() {
 }
 
 void Filesystem::fireListEvent() {
-  DynamicJsonDocument doc(1024);
+  DynamicJsonDocument doc(96 * m_files.size());
 
   for (auto i = 0; i < m_files.size(); i++) {
     doc[i]["path"] = m_files[i].path;
