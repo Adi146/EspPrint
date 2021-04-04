@@ -26,20 +26,27 @@ class FilesystemCard extends LitElement {
           ${this.files.map(file => {
             return html`
               <div class="file_entry">
-                ${file.path}
-                <div class="file_buttons">
-                  <button @click="${(e) => {
-                    const [domain, service] = this.config.print_service.split('.', 2);
-                    this._hass.callService(domain, service, {file: file.path});
-                  }}">
-                    <ha-icon icon="mdi:printer-3d-nozzle"/>
-                  </button>
-                  <button @click="${(e) => {
-                    const [domain, service] = this.config.delete_service.split('.', 2);
-                    this._hass.callService(domain, service, {file: file.path});
-                  }}">
-                    <ha-icon icon="mdi:trash-can"/>
-                  </button>
+                <div>
+                  ${file.path}
+                  <div class="file_buttons">
+                    <button @click="${(e) => {
+                      const [domain, service] = this.config.print_service.split('.', 2);
+                      this._hass.callService(domain, service, {file: file.path});
+                    }}">
+                      <ha-icon icon="mdi:printer-3d-nozzle"/>
+                    </button>
+                    <button @click="${(e) => {
+                      const [domain, service] = this.config.delete_service.split('.', 2);
+                      this._hass.callService(domain, service, {file: file.path});
+                    }}">
+                      <ha-icon icon="mdi:trash-can"/>
+                    </button>
+                  </div>
+                  <div class="attribute">
+                    Size: ${(file.size / (1024 * 1024)).toFixed(2)}MB
+                  </div>
+                  <div class="attribute">
+                    Upload: ${new Date(file.lastWrite * 1000).toLocaleDateString()}
                 </div>
               </div>
             `;
@@ -115,6 +122,9 @@ class FilesystemCard extends LitElement {
       }
       .file_buttons {
         float: right;
+      }
+      .attribute {
+        font-size: small;
       }
     `;
   }

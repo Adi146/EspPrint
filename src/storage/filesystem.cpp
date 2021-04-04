@@ -1,20 +1,25 @@
 #include "filesystem.h"
-#include "ArduinoJson.h"
 
 using namespace storage;
 
-Filesystem::Filesystem(FileReader* fileReader, std::string eventPrefix):
+void Fileinfo::fillJsonObject(JsonObject& obj) {
+  obj["path"] = path;
+  obj["size"] = size;
+  obj["lastWrite"] = lastWrite;
+}
+
+Filesystem::Filesystem(fs::FS& fs, std::string eventPrefix):
   Component(),
   CustomAPIDevice(),
-  m_fs(fileReader->getFS()),
+  m_fs(fs),
   m_eventPrefix(eventPrefix){
 }
 
-std::vector<Fileinfo> Filesystem::listDirectory(File file) {
+std::vector<Fileinfo> Filesystem::listDirectory(fs::File& directory) {
   std::vector<Fileinfo> files;
 
-  while(file) {
-    File entry =  file.openNextFile();
+  while(directory) {
+    File entry =  directory.openNextFile();
     if (!entry) {
       break;
     }
@@ -24,14 +29,20 @@ std::vector<Fileinfo> Filesystem::listDirectory(File file) {
       files.insert(files.end(), dirEntries.begin(), dirEntries.end());
     }
     else {
-      files.push_back({
-        entry.name(),
-        entry.size()
-      });
+      files.push_back(analyze(entry));
     }
   }
 
   return files;
+}
+
+Fileinfo Filesystem::analyze(fs::File& file) {
+  Fileinfo info;
+  info.path = file.name();
+  info.size = file.size();
+  info.lastWrite = file.getLastWrite();
+
+  return info;
 }
 
 void Filesystem::setup() {
@@ -48,8 +59,8 @@ void Filesystem::fireListEvent() {
   DynamicJsonDocument doc(96 * m_files.size());
 
   for (auto i = 0; i < m_files.size(); i++) {
-    doc[i]["path"] = m_files[i].path;
-    doc[i]["size"] = m_files[i].size;
+    JsonObject obj = doc.createNestedObject();
+    m_files[i].fillJsonObject(obj);
   }
 
   std::string tmp;

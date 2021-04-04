@@ -39,7 +39,7 @@ custom_component:
     return {upload};
 - id: list_fs
   lambda: |-
-    auto fs = new storage::Filesystem(get_fileReader(id(file_reader)), "${printer_name_short}");
+    auto fs = new storage::Filesystem(get_fileReader(id(file_reader))->getFS(), "${printer_name_short}");
     App.register_component(fs);
     return {fs};
 
