@@ -31,6 +31,7 @@ std::vector<Fileinfo> Filesystem::listDirectory(fs::File& directory) {
     else {
       files.push_back(analyze(entry));
     }
+    entry.close();
   }
 
   return files;
@@ -53,6 +54,7 @@ void Filesystem::setup() {
   if (root) {
     m_files = listDirectory(root);
   }
+  root.close();
 }
 
 void Filesystem::fireListEvent() {
