@@ -114,7 +114,7 @@ class TerminalCard extends LitElement {
         this.autoscroll = output.scrollTop == (output.scrollHeight - output.offsetHeight);
 
         this.gcodes = this.gcodes.concat(JSON.parse(event.data.gcodes));
-        this.gcodes.splice(TerminalCard.arraySize, this.gcodes.length - TerminalCard.arraySize);
+        this.gcodes.splice(0, this.gcodes.length - TerminalCard.arraySize);
       }, this.config.event);
     }
 
