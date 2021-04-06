@@ -6,6 +6,7 @@
 #include "ArduinoJson.h"
 
 #define EVENTS_BUFFER_SIZE 100
+#define JSON_BUFFER_SIZE 2048
 
 namespace sensors{
   struct BufferElement {
@@ -37,7 +38,7 @@ namespace sensors{
     }
 
     void update() override {
-      DynamicJsonDocument doc(1024);
+      DynamicJsonDocument doc(JSON_BUFFER_SIZE);
 
       auto i = 0;
       while (!m_buffer.empty()) {
