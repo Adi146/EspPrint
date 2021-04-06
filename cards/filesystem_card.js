@@ -115,7 +115,7 @@ class FilesystemCard extends LitElement {
         height: 400px;
       }
       .file_entry {
-        padding-bottom: 10px;
+        padding: 5px 0px;
         padding-left: 5px;
         padding-right: 5px;
         border-bottom: 1px solid;
