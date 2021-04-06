@@ -15,28 +15,6 @@ Filesystem::Filesystem(fs::FS& fs, std::string eventPrefix):
   m_eventPrefix(eventPrefix){
 }
 
-std::vector<Fileinfo> Filesystem::listDirectory(fs::File& directory) {
-  std::vector<Fileinfo> files;
-
-  while(directory) {
-    File entry =  directory.openNextFile();
-    if (!entry) {
-      break;
-    }
-
-    if(entry.isDirectory()) {
-      std::vector<Fileinfo> dirEntries = listDirectory(entry);
-      files.insert(files.end(), dirEntries.begin(), dirEntries.end());
-    }
-    else {
-      files.push_back(analyze(entry));
-    }
-    entry.close();
-  }
-
-  return files;
-}
-
 Fileinfo Filesystem::analyze(fs::File& file) {
   Fileinfo info;
   info.path = file.name();
@@ -52,7 +30,7 @@ void Filesystem::setup() {
 
   auto root = m_fs.open("/", FILE_READ);
   if (root) {
-    m_files = listDirectory(root);
+    addFile(root);
   }
   root.close();
 }
@@ -71,6 +49,24 @@ void Filesystem::fireListEvent() {
   fire_homeassistant_event("esphome." + m_eventPrefix + "_files", {
     {"files", tmp}
   });
+}
+
+void Filesystem::addFile(fs::File& file) {
+  if(file) {
+    if (file.isDirectory()) {
+      while(true) {
+        File entry = file.openNextFile();
+        if(!entry) {
+          break;
+        }
+        addFile(entry);
+        entry.close();
+      }
+    }
+    else {
+      m_files.push_back(analyze(file));
+    }
+  }
 }
 
 void Filesystem::deleteFile(std::string file) {

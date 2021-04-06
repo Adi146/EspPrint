@@ -29,17 +29,17 @@ web_server_base:
 custom_component:
 - id: file_reader
   lambda: |-
-    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), SD_MMC);
+    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), get_filesystem(id(list_fs)));
     App.register_component(file_reader);
     return {file_reader};
 - id: upload_server
   lambda: |-
-    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)));
+    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_filesystem(id(list_fs)));
     App.register_component(upload);
     return {upload};
 - id: list_fs
   lambda: |-
-    auto fs = new storage::Filesystem(get_fileReader(id(file_reader))->getFS(), "${printer_name_short}");
+    auto fs = new storage::Filesystem(SD_MMC, "${printer_name_short}");
     App.register_component(fs);
     return {fs};
 

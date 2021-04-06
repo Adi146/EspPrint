@@ -2,9 +2,10 @@
 
 using namespace storage;
 
-UploadServer::UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader):  
+UploadServer::UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, Filesystem* filesystem):  
   m_base(base), 
-  m_fileReader(fileReader) {
+  m_fileReader(fileReader),
+  m_filesystem(filesystem) {
 }
 
 void UploadServer::setup() {
@@ -36,7 +37,7 @@ void UploadServer::handleRequest(AsyncWebServerRequest *request) {
 void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
   if (!index) {
     ESP_LOGI("upload", "Upload Request %s", filename.c_str());
-    request->_tempFile = m_fileReader->getFS().open('/' + filename, FILE_WRITE);
+    request->_tempFile = m_filesystem->getFS().open('/' + filename, FILE_WRITE);
   }
 
   if (!request->_tempFile) {
@@ -49,6 +50,12 @@ void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &fi
   if (final) {
     ESP_LOGI("upload", "Upload complete %s", filename.c_str());
     request->_tempFile.close();
+
+    fs::File file = m_filesystem->getFS().open('/' + filename, FILE_READ);
+    m_filesystem->addFile(file);
+    file.close();
+    m_filesystem->fireListEvent();
+
     request->send(201, "text/plain", "Upload Success");
   }
 }

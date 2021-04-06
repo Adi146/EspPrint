@@ -3,6 +3,7 @@
 #include "esphome.h"
 #include "FS.h"
 #include "file_reader.h"
+#include "filesystem.h"
 
 using namespace esphome;
 
@@ -11,9 +12,10 @@ namespace storage {
   protected:
     web_server_base::WebServerBase* m_base;
     FileReader* m_fileReader;
+    Filesystem* m_filesystem;
 
   public:
-    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader);
+    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, Filesystem* filesystem);
 
     void setup() override;
 

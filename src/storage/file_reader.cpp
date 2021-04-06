@@ -2,10 +2,10 @@
 
 using namespace storage;
 
-FileReader::FileReader(GCodeSender* sender, fs::FS &fs) :
+FileReader::FileReader(GCodeSender* sender, Filesystem* filesystem) :
   Component(),
   m_sender(sender),
-  m_fs(fs) {
+  m_fs(filesystem->getFS()) {
 }
 
 std::string FileReader::readNextGCode() {

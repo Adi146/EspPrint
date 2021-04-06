@@ -1,8 +1,7 @@
 #pragma once
 
 #include "gcode_sender.h"
-#include "FS.h"
-#include "SD_MMC.h"
+#include "filesystem.h"
 
 using namespace esphome;
 using namespace esphome::custom_component;
@@ -20,7 +19,7 @@ namespace storage {
     std::string readNextGCode();
 
   public:
-    FileReader(GCodeSender* sender, fs::FS &fs);
+    FileReader(GCodeSender* sender, Filesystem* filesystem);
 
     void loop() override;
 
@@ -30,10 +29,6 @@ namespace storage {
 
     std::string getFilename() {
       return m_file.available() ? std::string(m_file.name()) : "";
-    }
-
-    fs::FS& getFS() {
-      return m_fs;
     }
   };
 }
