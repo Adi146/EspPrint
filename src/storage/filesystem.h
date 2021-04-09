@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome.h"
+#include "SD.h"
 #include "SD_MMC.h"
 #include "FS.h"
 #include "ArduinoJson.h"
@@ -37,9 +38,5 @@ namespace storage {
     void fireListEvent();
     void addFile(fs::File& file);
     void deleteFile(std::string);
-
-    fs::FS& getFS() {
-      return m_fs;
-    }
   };
 }

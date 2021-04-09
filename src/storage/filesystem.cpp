@@ -64,6 +64,7 @@ void Filesystem::addFile(fs::File& file) {
       }
     }
     else {
+      ESP_LOGI("filesystem", "new file found: %s", file.name());
       m_files.push_back(analyze(file));
     }
   }

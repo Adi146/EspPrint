@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gcode_sender.h"
-#include "filesystem.h"
+#include "FS.h"
 
 using namespace esphome;
 using namespace esphome::custom_component;
@@ -19,7 +19,7 @@ namespace storage {
     std::string readNextGCode();
 
   public:
-    FileReader(GCodeSender* sender, Filesystem* filesystem);
+    FileReader(GCodeSender* sender, fs::FS& fs);
 
     void loop() override;
 

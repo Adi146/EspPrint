@@ -1,3 +1,6 @@
+substitutions:
+  fs: SD
+
 esphome:
   includes:
     - src/storage/file_reader.h
@@ -10,7 +13,7 @@ esphome:
   libraries:
     - ArduinoJson-esphomelib
   on_boot:
-    - lambda: SD_MMC.begin();
+    - lambda: ${fs}.begin();
 
 api:
   services:
@@ -29,19 +32,19 @@ web_server_base:
 custom_component:
 - id: file_reader
   lambda: |-
-    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), get_filesystem(id(list_fs)));
+    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${fs});
     App.register_component(file_reader);
     return {file_reader};
 - id: upload_server
   lambda: |-
-    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_filesystem(id(list_fs)));
+    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_filesystem(id(filesystem)), ${fs});
     App.register_component(upload);
     return {upload};
-- id: list_fs
+- id: filesystem
   lambda: |-
-    auto fs = new storage::Filesystem(SD_MMC, "${printer_name_short}");
-    App.register_component(fs);
-    return {fs};
+    auto filesystem = new storage::Filesystem(${fs}, "${printer_name_short}");
+    App.register_component(filesystem);
+    return {filesystem};
 
 text_sensor:
 - platform: custom

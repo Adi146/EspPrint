@@ -14,8 +14,10 @@ namespace storage {
     FileReader* m_fileReader;
     Filesystem* m_filesystem;
 
+    fs::FS& m_fs;
+
   public:
-    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, Filesystem* filesystem);
+    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, Filesystem* filesystem, fs::FS& fs);
 
     void setup() override;
 
