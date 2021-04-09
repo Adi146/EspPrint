@@ -2,10 +2,11 @@
 
 using namespace storage;
 
-FileReader::FileReader(GCodeSender* sender, fs::FS& fs) :
+FileReader::FileReader(GCodeSender* sender, fs::FS& fs, std::vector<std::string> cancelGCodes) :
   Component(),
   m_sender(sender),
-  m_fs(fs) {
+  m_fs(fs),
+  m_cancelGCodes(cancelGCodes) {
 }
 
 std::string FileReader::readNextGCode() {
@@ -62,9 +63,9 @@ void FileReader::stop() {
   m_file.close();
   m_sender->m_buffer.setReadPtr(m_sender->m_buffer.getWritePtr());
 
-  m_sender->m_buffer.push("M104 S0");
-  m_sender->m_buffer.push("M140 S0");
-  m_sender->m_buffer.push("G28 X Y");
-  m_sender->m_buffer.push("M84");
+  for (auto it = m_cancelGCodes.begin(); it != m_cancelGCodes.end(); it++){
+    m_sender->m_buffer.push(*it);
+  }
+  
   m_sender->m_bufferMutex.unlock();
 }

@@ -1,5 +1,6 @@
 substitutions:
   fs: SD
+  cancle_gcode: '{"M104 S0", "M140 S0", "G28 X Y", "M84"}'
 
 esphome:
   includes:
@@ -32,7 +33,7 @@ web_server_base:
 custom_component:
 - id: file_reader
   lambda: |-
-    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${fs});
+    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${fs}, ${cancle_gcode});
     App.register_component(file_reader);
     return {file_reader};
 - id: upload_server

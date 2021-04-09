@@ -16,10 +16,12 @@ namespace storage {
     File m_file;
     fs::FS m_fs;
 
+    std::vector<std::string> m_cancelGCodes;
+
     std::string readNextGCode();
 
   public:
-    FileReader(GCodeSender* sender, fs::FS& fs);
+    FileReader(GCodeSender* sender, fs::FS& fs, std::vector<std::string> cancelGCodes);
 
     void loop() override;
 
