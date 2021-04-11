@@ -4,6 +4,7 @@ using namespace storage;
 
 FileReader::FileReader(GCodeSender* sender, fs::FS& fs, std::vector<std::string> cancelGCodes) :
   Component(),
+  CustomAPIDevice(),
   m_sender(sender),
   m_fs(fs),
   m_cancelGCodes(cancelGCodes) {
@@ -28,6 +29,11 @@ std::string FileReader::readNextGCode() {
   }
 
   return buffer;
+}
+
+void FileReader::setup() {
+  register_service(&FileReader::print, "print_file", {"file"});
+  register_service(&FileReader::stop, "cancle_print");
 }
 
 void FileReader::loop() {
@@ -66,6 +72,6 @@ void FileReader::stop() {
   for (auto it = m_cancelGCodes.begin(); it != m_cancelGCodes.end(); it++){
     m_sender->m_buffer.push(*it);
   }
-  
+
   m_sender->m_bufferMutex.unlock();
 }

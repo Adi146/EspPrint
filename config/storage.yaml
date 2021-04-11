@@ -16,17 +16,6 @@ esphome:
   on_boot:
     - lambda: ${fs}.begin();
 
-api:
-  services:
-    - service: print_file
-      variables:
-        file: string
-      then:
-        - lambda: get_fileReader(id(file_reader))->print(file);
-    - service: cancle_print
-      then:
-        - lambda: get_fileReader(id(file_reader))->stop();
-
 web_server_base:
   id: upload_server_base
 

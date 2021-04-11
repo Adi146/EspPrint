@@ -5,11 +5,12 @@
 
 using namespace esphome;
 using namespace esphome::custom_component;
+using namespace esphome::api;
 
 #define get_fileReader(constructor) static_cast<storage::FileReader *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
 namespace storage {
-  class FileReader: public Component{
+  class FileReader: public Component, public CustomAPIDevice {
   private:
     GCodeSender* m_sender;
 
@@ -22,6 +23,8 @@ namespace storage {
 
   public:
     FileReader(GCodeSender* sender, fs::FS& fs, std::vector<std::string> cancelGCodes);
+
+    void setup() override;
 
     void loop() override;
 
