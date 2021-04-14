@@ -19,32 +19,36 @@ ESP32s are way cheaper than Raspberry Pis and should provide enough computationa
 Most functions that are solved with plugins in Octoprint like switching plugs and led strips can be handled with automations in Home Assistant.
 
 ## Firmware Requirements
-To compensate the lower power of the ESP compared to the Rasperry Pi, the firmware needs a few more informations from the printer.
-Here are the firmware features in the Marlin configuration which have to be enabled:
-* ADVANCED_OK
+Here are the firmware features in the Marlin which have to be enabled:
 * AUTO_REPORT_TEMPERATURES
-* BUFSIZE 32
-* RX_BUFFER_SIZE 2048
-* 
+
 Optional:
+* ADVANCED_OK
 * HOST_ACTION_COMMANDS
 
 ## Installation
 1. [Install Python and ESPHome](https://esphome.io/guides/getting_started_command_line.html)
-2. Flash your ESP32
+2. Change configuration in espprint.yaml, secrets.yaml and config folder
+3. Flash your ESP32
 ```
 esphome espprint.yaml run
 ```
 3. Use free UART-Pins of you printers mainboard to connect the ESP32. 
-   The ESP needs more power than a typical printer mainboard can supply with the 5V pins. Therefore you should use a Buck Converter.
-4. Add the device to Home Assistant
+   The ESP needs more power than a typical printer mainboard can supply with the 5V pins therefore you should use a Buck Converter.
+4. Add the ESP to Home Assistant as an ESPHome device
+5. Add the custom cards in the cards directory to your Home Assistant Dashboard
 
+## Slicer configuration
+At the moment only Prusa Slicer is supported. The setup is the same as with octoprint except that the API Key is not required.
 
 ## Tested Environments
+The following Boards and ESPs are tested but other Hardware should work too.
 ### Printer Boards
 * MKS Robin Nano V1.2
 * BTT SKR 1.4
+* FYSETC S6
 ### Printer Firmware
 * Marlin 2.0
 ### ESPs
-* ESP32 Cam Module
+* AI-Thinker ESP32 Cam Module
+* ESP32 D1 Mini
