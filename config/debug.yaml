@@ -1,3 +1,7 @@
+# these components are intended for troubleshooting
+# if your ESPPrint setup is stable feel free to disable this package
+# a troubleshooting guide will follow soon
+
 esphome:
   includes:
     - src/sensors/memory_sensor.h
@@ -7,8 +11,10 @@ esphome:
     - src/sensors/gcode_buffer_sensor.h
 
 sensor:
+# uptime sensor of the ESP to detect crashes
 - platform: uptime
   name: "${printer_name} ESP Uptime"
+# displays free memory of the ESP
 - platform: custom
   lambda: |-
     auto memory = new sensors::MemorySensor();
@@ -17,6 +23,8 @@ sensor:
   sensors:
   - name: "${printer_name} ESP Free Memory"
     unit_of_measurement: "bytes"
+# number of resends per print job
+# don't worry about a few resends but a high number indicates a unstable connection to the printer
 - platform: custom
   lambda: |-
     auto resend = new sensors::ResendSensor(get_sender(id(gcode_sender)));
@@ -25,6 +33,8 @@ sensor:
   sensors:
   - name: "${printer_name} Print Resends"
     unit_of_measurement: "number"
+# timeouts occur when ESPPrint doesn't receive a answer form the printer
+# this should never happen. Timeouts are a indication for unstable connection to the printer and may result in blobs on your print
 - platform: custom
   lambda: |-
     auto timeouts = new sensors::TimeoutSensor(get_sender(id(gcode_sender)));
@@ -33,6 +43,7 @@ sensor:
   sensors:
   - name: "${printer_name} Print Timeouts"
     unit_of_measurement: "number"
+# current free slots in the printers planner and gcode buffer. ADVANCED_OK is necessary
 - platform: custom
   lambda: |-
     auto planner = new sensors::PlannerBufferSensor(get_sender(id(gcode_sender)));

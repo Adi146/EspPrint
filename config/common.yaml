@@ -1,3 +1,6 @@
+# these are the core components of ESPPrint. Most are used for basic GCode communication.
+# other packages may depend on components of this package.
+
 esphome:
   includes:
     - src/gcode_sender.h
@@ -14,32 +17,41 @@ esphome:
   libraries:
     - ArduinoJson-esphomelib
   on_boot:
+    # wait until printer is up and running
     - delay: 4s
+    # initialize gcode sender module
     - lambda: get_sender(id(gcode_sender))->reset();
+    # enable auto temperature report
     - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
 
 api:
   services:
+    # service to send gcodes over home assistant
     - service: send_gcode
       variables:
         gcode: string
       then:
         - lambda: get_sender(id(gcode_sender))->sendGCode(gcode);
 
+# disable logging to uart.
+# do not touch this otherwise the GCode communication will break!
 logger:
   baud_rate: 0
 
 custom_component:
+# core components for sending GCodes
 - id: gcode_sender
   lambda: |-
     auto sender = new GCodeSender(id(uart_bus), 1);
     App.register_component(sender);
     return {sender};
+# core component for receiving GCode responses
 - id: gcode_reader
   lambda: |-
     auto reader = new GCodeReader(id(uart_bus), get_sender(id(gcode_sender)));
     App.register_component(reader);
     return {reader};
+# forwards sent and received GCodes to Home Assistant for terminal card
 - id: events
   lambda: |-
     auto events = new sensors::GCodeEvents("${printer_name_short}");
@@ -49,6 +61,7 @@ custom_component:
     return {events};
 
 climate:
+# temperature control of hotends and heated bed
 - platform: custom
   lambda: |-
     auto temperature = new sensors::TemperatureSensor(2, get_sender(id(gcode_sender)));
@@ -69,6 +82,8 @@ climate:
       temperature_step: 1 °C
 
 sensor:
+# sensors for estimated print time and print progress.
+# these will update with M73 commands
 - platform: custom
   lambda: |-
     auto progress = new sensors::ProgressSensor();
@@ -81,6 +96,7 @@ sensor:
     unit_of_measurement: "min"
 
 text_sensor:
+# sensor for HOST_ACTION_COMMANDS
 - platform: custom
   lambda: |-
     auto action = new sensors::ActionSensor();

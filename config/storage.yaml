@@ -1,5 +1,9 @@
+# components for file storage. You can print GCodes files with this package.
+
 substitutions:
+  # Filesystem of the Storage, currently tested filesystems are SD_MMC and SD for SPI card readers
   fs: SD
+  # this GCode will be executed when the print get canceled
   cancle_gcode: '{"M104 S0", "M140 S0", "G28 X Y", "M84"}'
 
 esphome:
@@ -20,16 +24,20 @@ web_server_base:
   id: upload_server_base
 
 custom_component:
+# component to print GCode from storage
 - id: file_reader
   lambda: |-
     auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${fs}, ${cancle_gcode});
     App.register_component(file_reader);
     return {file_reader};
+# http server for GCode upload
+# this component fakes parts of the octoprint Rest API for compatiblity with slicers
 - id: upload_server
   lambda: |-
     auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_filesystem(id(filesystem)), ${fs});
     App.register_component(upload);
     return {upload};
+# component to enable filesystem card
 - id: filesystem
   lambda: |-
     auto filesystem = new storage::Filesystem(${fs}, "${printer_name_short}");
@@ -37,6 +45,7 @@ custom_component:
     return {filesystem};
 
 text_sensor:
+# displays the file which is currently printing
 - platform: custom
   lambda: |-
     auto file_sensor = new storage::FileSensor(get_fileReader(id(file_reader)));
