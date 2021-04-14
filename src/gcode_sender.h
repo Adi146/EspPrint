@@ -45,7 +45,7 @@ protected:
   std::mutex m_sendMutex;
   std::mutex m_bufferMutex;
 
-  void ok(int plannerBuffer, int commandBuffer, int64_t lineNumber);
+  void ok(int plannerBuffer, int commandBuffer, uint64_t lineNumber);
 
   void _sendGCode(std::string gcode, uint64_t lineNumber);
 
@@ -62,7 +62,7 @@ public:
 
   void reset();
 
-  void handleOK(int plannerBuffer, int commandBuffer, int64_t lineNumber);
+  void handleOK(int plannerBuffer, int commandBuffer, uint64_t lineNumber);
 
   void handleResend(uint64_t lineNumber);
 

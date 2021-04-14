@@ -25,14 +25,15 @@ void GCodeReader::loop() {
 bool GCodeReader::readLine(std::string* line) {
   for (int i = available(); i > 0; i--) {
     m_readBuffer[m_readBuffer_ptr] = read();
-    if (m_readBuffer[m_readBuffer_ptr] == '\n' || m_readBuffer[m_readBuffer_ptr] >= 128) {
+    if (m_readBuffer[m_readBuffer_ptr] == '\n') {
       m_readBuffer[m_readBuffer_ptr] = 0;
       m_readBuffer_ptr = 0;
       *line = std::string(m_readBuffer);
       return true;
+    } 
+    else if(m_readBuffer[m_readBuffer_ptr] < 128) {
+      m_readBuffer_ptr++;
     }
-
-    m_readBuffer_ptr++;
   }
 
   return false;
@@ -40,10 +41,10 @@ bool GCodeReader::readLine(std::string* line) {
 
 bool GCodeReader::handleOK(std::string& line) {
   std::smatch match;
-  if (std::regex_match(line, match, m_okRgx)) {
-    int64_t lineNumber = match[2].matched ? atoi(match[2].str().c_str()) : -1;
-    int plannerBuffer = atoi(match[4].str().c_str());
-    int commandBuffer = atoi(match[6].str().c_str());
+  if (std::regex_search(line, match, m_okRgx)) {
+    uint64_t lineNumber = match[3].matched ? atoi(match[3].str().c_str()) : 0;
+    int plannerBuffer = match[5].matched ? atoi(match[5].str().c_str()) : -1;
+    int commandBuffer = match[7].matched ? atoi(match[7].str().c_str()) : -1;
 
     m_sender->handleOK(plannerBuffer, commandBuffer, lineNumber);
     return true;

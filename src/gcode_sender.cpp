@@ -39,7 +39,7 @@ void GCodeSender::threadLoop() {
   } 
   else {
     m_bufferMutex.lock();
-    if (!m_buffer.empty() && !m_resendBuffer.full()) {
+    while (!m_buffer.empty() && !m_resendBuffer.full()) {
       auto gcode = m_buffer.pop();
       m_resendBuffer.push(gcode);
       _sendGCode(gcode, m_resendBuffer.getWritePtr());
@@ -96,17 +96,20 @@ void GCodeSender::reset() {
   m_sendMutex.unlock();
 }
 
-void GCodeSender::handleOK(int plannerBuffer, int commandBuffer, int64_t lineNumber) {
+void GCodeSender::handleOK(int plannerBuffer, int commandBuffer, uint64_t lineNumber) {
   m_sendMutex.lock();
   ok(plannerBuffer, commandBuffer, lineNumber);
   m_sendMutex.unlock();
 }
 
-void GCodeSender::ok(int plannerBuffer, int commandBuffer, int64_t lineNumber) {
+void GCodeSender::ok(int plannerBuffer, int commandBuffer, uint64_t lineNumber) {
   m_lastCommandTimestamp = millis();
 
   if (lineNumber >= m_resendBuffer.getReadPtr() && lineNumber <= m_resendBuffer.getWritePtr()) {
     m_resendBuffer.setReadPtr(lineNumber + 1);
+  } 
+  else if(!m_resendBuffer.empty()) {
+    m_resendBuffer.pop();
   }
   
   m_okGCodeBuffer = commandBuffer;

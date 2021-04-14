@@ -18,7 +18,7 @@ using namespace esphome::custom_component;
 
 class GCodeReader : public Component, public UARTDevice, public util::Threading {
 private:
-  std::regex m_okRgx = std::regex(R"(^ok (N(\d+) )?(P(\d+)) (B(\d+))$)");
+  std::regex m_okRgx = std::regex(R"(ok(( N(\d+))? (P(\d+)) (B(\d+)))?)");
   std::regex m_resendRgx = std::regex(R"(Resend: (\d+))");
   std::string m_busyStr = "echo:busy:";
 

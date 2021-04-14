@@ -32,7 +32,7 @@ logger:
 custom_component:
 - id: gcode_sender
   lambda: |-
-    auto sender = new GCodeSender(id(uart_bus), 4);
+    auto sender = new GCodeSender(id(uart_bus), 1);
     App.register_component(sender);
     return {sender};
 - id: gcode_reader
