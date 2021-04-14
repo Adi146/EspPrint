@@ -26,7 +26,7 @@ private:
 
   GCodeSender* m_sender;
 
-  char m_readBuffer[256];
+  char m_readBuffer[MAX_GCODE_LENGTH];
   int m_readBuffer_ptr = 0;
 
   util::RingBuffer<std::string> m_sensorBuffer;

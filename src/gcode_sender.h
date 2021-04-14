@@ -11,6 +11,7 @@
 
 #define BUFFER_SIZE 50
 #define SENDER_SENSOR_BUFFER_SIZE 20
+#define MAX_GCODE_LENGTH 256
 
 using namespace sensors;
 using namespace esphome;

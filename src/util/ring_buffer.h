@@ -55,5 +55,9 @@ namespace util {
     uint64_t getReadPtr() {
       return read_ptr;
     }
+
+    uint64_t fillLevel() {
+      return write_ptr - read_ptr + 1;
+    }
   };
 }

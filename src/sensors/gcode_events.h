@@ -38,7 +38,7 @@ namespace sensors{
     }
 
     void update() override {
-      DynamicJsonDocument doc(JSON_BUFFER_SIZE);
+      DynamicJsonDocument doc(MAX_GCODE_LENGTH * m_buffer.fillLevel());
 
       auto i = 0;
       while (!m_buffer.empty()) {

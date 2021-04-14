@@ -11,7 +11,7 @@ FileReader::FileReader(GCodeSender* sender, fs::FS& fs, std::vector<std::string>
 }
 
 std::string FileReader::readNextGCode() {
-  char buffer[128] = "";
+  char buffer[MAX_GCODE_LENGTH] = "";
   for (int i = 0; i < sizeof(buffer) && m_file.available(); i++) {
     char c = m_file.read();
     switch (c) {
