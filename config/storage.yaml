@@ -13,36 +13,41 @@ esphome:
     - src/storage/upload_server.h
     - src/storage/upload_server.cpp
     - src/storage/file_sensor.h
-    - src/storage/filesystem.cpp
-    - src/storage/filesystem.h
+    - src/storage/analyzer/file_analyzer.cpp
+    - src/storage/analyzer/file_analyzer.h
+    - src/storage/fs_adapter/fs_adapter.h
+    - src/storage/fs_adapter/${fs}_adapter.h
   libraries:
-    - ArduinoJson-esphomelib
-  on_boot:
-    - lambda: ${fs}.begin();
+    - ArduinoJson-esphomelib        
 
 web_server_base:
   id: upload_server_base
 
 custom_component:
+- id: fs_adapter
+  lambda: |-
+    auto fsAdapter = storage::fsAdapter;
+    App.register_component(fsAdapter);
+    return {fsAdapter};
 # component to print GCode from storage
 - id: file_reader
   lambda: |-
-    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${fs}, ${cancle_gcode});
+    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${cancle_gcode});
     App.register_component(file_reader);
     return {file_reader};
 # http server for GCode upload
 # this component fakes parts of the octoprint Rest API for compatiblity with slicers
 - id: upload_server
   lambda: |-
-    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_filesystem(id(filesystem)), ${fs});
+    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_fileanalyzer(id(analyzer)));
     App.register_component(upload);
     return {upload};
 # component to enable filesystem card
-- id: filesystem
+- id: analyzer
   lambda: |-
-    auto filesystem = new storage::Filesystem(${fs}, "${printer_name_short}");
-    App.register_component(filesystem);
-    return {filesystem};
+    auto analyzer = new storage::analyzer::Fileanalyzer("${printer_name_short}");
+    App.register_component(analyzer);
+    return {analyzer};
 
 text_sensor:
 # displays the file which is currently printing

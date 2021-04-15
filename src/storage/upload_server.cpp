@@ -2,11 +2,10 @@
 
 using namespace storage;
 
-UploadServer::UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, Filesystem* filesystem, fs::FS& fs):  
+UploadServer::UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, analyzer::Fileanalyzer* fileanalyzer):  
   m_base(base), 
   m_fileReader(fileReader),
-  m_filesystem(filesystem),
-  m_fs(fs) {
+  m_fileanalyzer(fileanalyzer) {
 }
 
 void UploadServer::setup() {
@@ -38,7 +37,7 @@ void UploadServer::handleRequest(AsyncWebServerRequest *request) {
 void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
   if (!index) {
     ESP_LOGI("upload", "Upload Request %s", filename.c_str());
-    request->_tempFile = m_fs.open('/' + filename, FILE_WRITE);
+    request->_tempFile = fs.open('/' + filename, FILE_WRITE);
   }
 
   if (!request->_tempFile) {
@@ -52,10 +51,10 @@ void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &fi
     ESP_LOGI("upload", "Upload complete %s", filename.c_str());
     request->_tempFile.close();
 
-    fs::File file = m_fs.open('/' + filename, FILE_READ);
-    m_filesystem->addFile(file);
+    fs::File file = fs.open('/' + filename, FILE_READ);
+    m_fileanalyzer->addFile(file);
     file.close();
-    m_filesystem->fireListEvent();
+    m_fileanalyzer->fireListEvent();
 
     request->send(201, "text/plain", "Upload Success");
   }

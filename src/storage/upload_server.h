@@ -1,9 +1,9 @@
 #pragma once
 
 #include "esphome.h"
-#include "FS.h"
+#include "fs_adapter.h"
 #include "file_reader.h"
-#include "filesystem.h"
+#include "file_analyzer.h"
 
 using namespace esphome;
 
@@ -12,12 +12,10 @@ namespace storage {
   protected:
     web_server_base::WebServerBase* m_base;
     FileReader* m_fileReader;
-    Filesystem* m_filesystem;
-
-    fs::FS& m_fs;
+    analyzer::Fileanalyzer* m_fileanalyzer;
 
   public:
-    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, Filesystem* filesystem, fs::FS& fs);
+    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, analyzer::Fileanalyzer* fileanalyzer);
 
     void setup() override;
 

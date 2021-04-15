@@ -2,11 +2,10 @@
 
 using namespace storage;
 
-FileReader::FileReader(GCodeSender* sender, fs::FS& fs, std::vector<std::string> cancelGCodes) :
+FileReader::FileReader(GCodeSender* sender, std::vector<std::string> cancelGCodes) :
   Component(),
   CustomAPIDevice(),
   m_sender(sender),
-  m_fs(fs),
   m_cancelGCodes(cancelGCodes) {
 }
 
@@ -55,7 +54,7 @@ void FileReader::print(std::string filename) {
 
   ESP_LOGI("file", "Start printing from SD-Card %s", filename.c_str());
 
-  m_file = m_fs.open(filename.c_str());
+  m_file = fs.open(filename.c_str());
   if (!m_file) {
     ESP_LOGE("file", "File does not exist: %s", filename.c_str());
     return;

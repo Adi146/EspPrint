@@ -1,6 +1,6 @@
-#include "filesystem.h"
+#include "file_analyzer.h"
 
-using namespace storage;
+using namespace storage::analyzer;
 
 void Fileinfo::fillJsonObject(JsonObject& obj) {
   obj["path"] = path;
@@ -8,14 +8,13 @@ void Fileinfo::fillJsonObject(JsonObject& obj) {
   obj["lastWrite"] = lastWrite;
 }
 
-Filesystem::Filesystem(fs::FS& fs, std::string eventPrefix):
+Fileanalyzer::Fileanalyzer(std::string eventPrefix):
   Component(),
   CustomAPIDevice(),
-  m_fs(fs),
   m_eventPrefix(eventPrefix){
 }
 
-Fileinfo Filesystem::analyze(fs::File& file) {
+Fileinfo Fileanalyzer::analyze(fs::File& file) {
   Fileinfo info;
   info.path = file.name();
   info.size = file.size();
@@ -24,18 +23,18 @@ Fileinfo Filesystem::analyze(fs::File& file) {
   return info;
 }
 
-void Filesystem::setup() {
-  register_service(&Filesystem::fireListEvent, "list_files");
-  register_service(&Filesystem::deleteFile, "delete_file", {"file"});
+void Fileanalyzer::setup() {
+  register_service(&Fileanalyzer::fireListEvent, "list_files");
+  register_service(&Fileanalyzer::deleteFile, "delete_file", {"file"});
 
-  auto root = m_fs.open("/", FILE_READ);
+  auto root = fs.open("/", FILE_READ);
   if (root) {
     addFile(root);
   }
   root.close();
 }
 
-void Filesystem::fireListEvent() {
+void Fileanalyzer::fireListEvent() {
   DynamicJsonDocument doc(96 * m_files.size());
 
   for (auto i = 0; i < m_files.size(); i++) {
@@ -47,11 +46,11 @@ void Filesystem::fireListEvent() {
   serializeJson(doc, tmp);
 
   fire_homeassistant_event("esphome." + m_eventPrefix + "_files", {
-    {"files", tmp}
+    { "files", tmp }
   });
 }
 
-void Filesystem::addFile(fs::File& file) {
+void Fileanalyzer::addFile(fs::File& file) {
   if(file) {
     if (file.isDirectory()) {
       while(true) {
@@ -64,14 +63,14 @@ void Filesystem::addFile(fs::File& file) {
       }
     }
     else {
-      ESP_LOGI("filesystem", "new file found: %s", file.name());
+      ESP_LOGI("analzyer", "new file found: %s", file.name());
       m_files.push_back(analyze(file));
     }
   }
 }
 
-void Filesystem::deleteFile(std::string file) {
-  if(m_fs.remove(file.c_str())) {
+void Fileanalyzer::deleteFile(std::string file) {
+  if(fs.remove(file.c_str())) {
     for (auto it = m_files.begin(); it != m_files.end();) {
       if(it->path == file) {
         it = m_files.erase(it);
