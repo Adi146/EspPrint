@@ -9,7 +9,9 @@ class FilesystemCard extends LitElement {
     return {
       _hass: {},
       config: {},
-      files: {type: Array}
+      files: {type: Array},
+      totalSize: {type: Number},
+      usedSize: {type: Number}
     };
   }
 
@@ -17,36 +19,44 @@ class FilesystemCard extends LitElement {
     super();
     this.config = {};
     this.files = [];
+    this.totalSize = 0;
+    this.usedSize = 0;
   }
 
   render() {
     return html`
-      <ha-card header="Files">
+      <ha-card>
+        <h1 class="card-header">
+          Files
+          <div class="fs attribute">
+            Storage usage: ${this.readableSize(this.usedSize)} / ${this.readableSize(this.totalSize)}
+          </div>
+        </h1>
+
         <div class="file_list">
           ${this.files.map(file => {
             return html`
               <div class="file_entry">
-                <div>
+                <div class="file">
                   ${file.path}
-                  <div class="file_buttons">
-                    <button @click="${(e) => {
-                      const [domain, service] = this.config.print_service.split('.', 2);
-                      this._hass.callService(domain, service, {file: file.path});
-                    }}">
-                      <ha-icon icon="mdi:printer-3d-nozzle"/>
-                    </button>
-                    <button @click="${(e) => {
-                      const [domain, service] = this.config.delete_service.split('.', 2);
-                      this._hass.callService(domain, service, {file: file.path});
-                    }}">
-                      <ha-icon icon="mdi:trash-can"/>
-                    </button>
-                  </div>
                   <div class="attribute">
-                    Size: ${(file.size / (1024 * 1024)).toFixed(2)}MB
+                    Size: ${this.readableSize(file.size)}
                   </div>
-                  <div class="attribute">
-                    Upload: ${new Date(file.lastWrite * 1000).toLocaleDateString()}
+                </div>
+
+                <div class="file_buttons">
+                  <button @click="${(e) => {
+                    const [domain, service] = this.config.print_service.split('.', 2);
+                    this._hass.callService(domain, service, {file: file.path});
+                  }}">
+                    <ha-icon icon="mdi:printer-3d-nozzle"/>
+                  </button>
+                  <button @click="${(e) => {
+                    const [domain, service] = this.config.delete_service.split('.', 2);
+                    this._hass.callService(domain, service, {file: file.path});
+                  }}">
+                    <ha-icon icon="mdi:trash-can"/>
+                  </button>
                 </div>
               </div>
             `;
@@ -61,7 +71,9 @@ class FilesystemCard extends LitElement {
       this._hass = hass;
       
       this._hass.connection.subscribeEvents((event) => {
-        this.files = JSON.parse(event.data.files);    
+        this.files = JSON.parse(event.data.files);
+        this.totalSize = event.data.totalSize;
+        this.usedSize = event.data.usedSize;
       }, this.config.event);
 
       const [domain, service] = this.config.list_service.split('.', 2);
@@ -108,6 +120,18 @@ class FilesystemCard extends LitElement {
     }
   }
 
+  readableSize(size) {
+    var i = 0;
+    const units = ["Bytes", "kB", "MB", "GB", "TB"];
+
+    while(size > 1024) {
+      size /= 1024;
+      i++
+    }
+
+    return size.toFixed(2) + " " + units[i];
+  }
+
   static get styles() {
     return css`
       .file_list {
@@ -118,13 +142,35 @@ class FilesystemCard extends LitElement {
         padding: 5px 0px;
         padding-left: 5px;
         padding-right: 5px;
-        border-bottom: 1px solid;
+        border-top: 1px solid;
+        overflow: hidden;
+      }
+      .file {
+        float: left;
+        width: 70%;
       }
       .file_buttons {
         float: right;
       }
+      button {
+        background-color: var(--ha-card-background);
+        border-radius: 2px;
+        padding: 8px;
+        border: 1px solid var(--secondary-text-color);
+        cursor: pointer;
+      }
+      button:hover {
+        filter: brightness(120%);
+      }
+      ha-icon {
+        color: var(--secondary-text-color);
+      }
       .attribute {
         font-size: small;
+        color: var(--secondary-text-color);
+      }
+      .fs {
+        float: right;
       }
     `;
   }

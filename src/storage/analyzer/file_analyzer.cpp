@@ -46,7 +46,9 @@ void Fileanalyzer::fireListEvent() {
   serializeJson(doc, tmp);
 
   fire_homeassistant_event("esphome." + m_eventPrefix + "_files", {
-    { "files", tmp }
+    { "files", tmp },
+    { "totalSize", to_string(fsAdapter->getTotalSize()) },
+    { "usedSize", to_string(fsAdapter->getUsedSize()) }
   });
 }
 
