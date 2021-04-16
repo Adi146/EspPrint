@@ -139,10 +139,8 @@ class FilesystemCard extends LitElement {
         height: 400px;
       }
       .file_entry {
-        padding: 5px 0px;
-        padding-left: 5px;
-        padding-right: 5px;
-        border-top: 1px solid;
+        padding: 5px 16px;
+        border-top: 1px solid var(--secondary-background-color);
         overflow: hidden;
       }
       .file {
@@ -156,10 +154,11 @@ class FilesystemCard extends LitElement {
         background-color: var(--ha-card-background);
         border-radius: 2px;
         padding: 8px;
-        border: 1px solid var(--secondary-text-color);
+        border: 1px solid var(--paper-item-icon-color);
         cursor: pointer;
       }
-      button:hover {
+      button:hover, button:focus {
+        outline: none;
         filter: brightness(120%);
       }
       ha-icon {
