@@ -5,8 +5,7 @@
 #include "ring_buffer.h"
 #include "ArduinoJson.h"
 
-#define EVENTS_BUFFER_SIZE 100
-#define JSON_BUFFER_SIZE 2048
+#define EVENTS_BUFFER_SIZE 50
 
 namespace sensors{
   struct BufferElement {
