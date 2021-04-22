@@ -9,7 +9,7 @@ FileReader::FileReader(GCodeSender* sender, std::vector<std::string> cancelGCode
   m_cancelGCodes(cancelGCodes) {
 }
 
-std::string FileReader::readNextGCode() {
+void FileReader::readNextGCode(std::string& gcode) {
   char buffer[MAX_GCODE_LENGTH] = "";
   for (int i = 0; i < sizeof(buffer) && m_file.available(); i++) {
     char c = m_file.read();
@@ -18,7 +18,8 @@ std::string FileReader::readNextGCode() {
       m_file.readStringUntil('\n');
     case '\n':
       if (i > 1)
-        return std::string(buffer);
+        gcode = std::string(buffer);
+        return;
       i = -1;
     default:
       buffer[i] = c;
@@ -27,18 +28,21 @@ std::string FileReader::readNextGCode() {
     }
   }
 
-  return buffer;
+  gcode = std::string(buffer);
 }
 
 void FileReader::setup() {
   register_service(&FileReader::print, "print_file", {"file"});
   register_service(&FileReader::stop, "cancle_print");
+
+  Threading::setup(4 * 1024, 1, 1);
 }
 
-void FileReader::loop() {
+void FileReader::threadLoop() {
   m_sender->m_bufferMutex.lock();
   if (m_file.available() && !m_sender->m_buffer.full()) {
-    std::string gcode = readNextGCode();
+    std::string gcode;
+    readNextGCode(gcode);
     if (!gcode.empty()) {
       m_sender->m_buffer.push(gcode);
     }

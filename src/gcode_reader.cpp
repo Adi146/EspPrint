@@ -22,13 +22,13 @@ void GCodeReader::loop() {
   }
 }
 
-bool GCodeReader::readLine(std::string* line) {
+bool GCodeReader::readLine(std::string& line) {
   for (int i = available(); i > 0; i--) {
     m_readBuffer[m_readBuffer_ptr] = read();
     if (m_readBuffer[m_readBuffer_ptr] == '\n') {
       m_readBuffer[m_readBuffer_ptr] = 0;
       m_readBuffer_ptr = 0;
-      *line = std::string(m_readBuffer);
+      line = std::string(m_readBuffer);
       return true;
     } 
     else if(m_readBuffer[m_readBuffer_ptr] < 128) {
@@ -75,7 +75,7 @@ bool GCodeReader::handleBusy(std::string& line) {
 void GCodeReader::threadLoop() {
   std::string line;
 
-  if (readLine(&line)) {
+  if (readLine(line)) {
     handleOK(line) || handleBusy(line) || handleResend(line);
 
     if(!m_sensorBuffer.full()) {

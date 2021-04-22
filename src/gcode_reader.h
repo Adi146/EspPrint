@@ -47,7 +47,7 @@ public:
 
   void threadLoop() override;
 
-  bool readLine(std::string* line);
+  bool readLine(std::string& line);
 
   void addSensor(GCodeSensor* sensor) {
     m_sensors.push_back(sensor);

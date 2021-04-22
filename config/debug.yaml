@@ -79,3 +79,11 @@ sensor:
   sensors:
   - name: "${printer_name} Reader Thread Stack Watermark"
     unit_of_measurement: "bytes"
+- platform: custom
+  lambda: |-
+    auto fileStack = new sensors::StackSensor(get_fileReader(id(file_reader)));
+    App.register_component(fileStack);
+    return {fileStack};
+  sensors:
+  - name: "${printer_name} File Reader Thread Stack Watermark"
+    unit_of_measurement: "bytes"
