@@ -5,8 +5,6 @@ import {
 } from "https://unpkg.com/lit-element@2.4.0/lit-element.js?module";
 
 class TerminalCard extends LitElement {
-  static arraySize = 300;
-
   static get properties() {
     return {
       _hass: {},
@@ -44,15 +42,17 @@ class TerminalCard extends LitElement {
             `
           })}
         </div>
-        <form autocomplete="off" @submit="${(e) => {
-          e.preventDefault();
-          this.sendGCode();          
-        }}">
-          <input type="text" id="input" @keydown="${(e) => {
-            this.onKeyPress(e);
-          }}"/>
-          <input type="submit" value="Send"/>
-        </form>
+        <div id="input">
+          <form autocomplete="off" @submit="${(e) => {
+            e.preventDefault();
+            this.sendGCode();          
+          }}">
+            <input type="text" id="input" @keydown="${(e) => {
+              this.onKeyPress(e);
+            }}"/>
+            <input type="submit" value="Send"/>
+          </form>
+        </div>
       </ha-card>
     `;
   }
@@ -111,10 +111,9 @@ class TerminalCard extends LitElement {
 
       this._hass.connection.subscribeEvents((event) => {
         var output = this.shadowRoot.getElementById("output");
-        this.autoscroll = output.scrollTop == (output.scrollHeight - output.offsetHeight);
+        this.autoscroll = output.scrollTop >= (output.scrollHeight - output.offsetHeight - 10);
 
         this.gcodes = this.gcodes.concat(JSON.parse(event.data.gcodes));
-        this.gcodes.splice(0, this.gcodes.length - TerminalCard.arraySize);
       }, this.config.event);
     }
 
@@ -150,8 +149,11 @@ class TerminalCard extends LitElement {
     return css`
       #output {
         overflow: auto;
-        padding: 0 16px 16px;
+        padding: 0 16px;
         height: 200px;
+      }
+      #input {
+        margin: 10px 8px;
       }
       .source {
         font-weight: bold;
@@ -159,9 +161,20 @@ class TerminalCard extends LitElement {
       }
       input[type=text] {
         width: 79%;
+        border: none;
+        color: var(--primary-text-color);
+        background-color: transparent;
+        border-bottom: 1px solid var(--primary-text-color);
       }
       input[type=submit] {
-        width: 18%;
+        width: 15%;
+        border: none;
+        color: var(--primary-text-color);
+        background-color: var(--disabled-text-color);
+      }
+      input[type=text]:focus {
+        outline: none;
+        border-bottom: 1px solid var(--primary-color);
       }
     `;
   }
