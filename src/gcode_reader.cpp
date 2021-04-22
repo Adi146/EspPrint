@@ -7,7 +7,7 @@ GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender):
 }
 
 void GCodeReader::setup() {
-  Threading::setup();
+  Threading::setup(8 * 1024, configMAX_PRIORITIES - 1, 0);
 }
 
 void GCodeReader::loop() {
@@ -78,7 +78,8 @@ void GCodeReader::threadLoop() {
   if (readLine(&line)) {
     handleOK(line) || handleBusy(line) || handleResend(line);
 
-    if(!m_sensorBuffer.full())
+    if(!m_sensorBuffer.full()) {
       m_sensorBuffer.push(line);
+    }
   }
 }

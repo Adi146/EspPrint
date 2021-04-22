@@ -20,7 +20,7 @@ namespace storage{
         publish_state("None");
       } 
       else {
-        publish_state(m_fileReader->getFilename());
+        publish_state(val);
       }
     }
   };

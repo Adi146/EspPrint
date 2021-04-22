@@ -1,10 +1,15 @@
 #pragma once
 
+namespace sensors {
+  class StackSensor;
+}
+
 namespace util {
   class Threading {
+  friend sensors::StackSensor;
   public:
-    virtual void setup() {
-      xTaskCreatePinnedToCore(Threading::t, "threadLoop", 8 * 1024, this, configMAX_PRIORITIES - 1, &m_thread, 0);
+    virtual void setup(uint32_t stackSize, UBaseType_t priority, BaseType_t core) {
+      xTaskCreatePinnedToCore(Threading::t, "threadLoop", stackSize, this, priority, &m_thread, core);
     }
 
     virtual void threadLoop() = 0;
@@ -12,7 +17,7 @@ namespace util {
     int m_delayMs = 1;
 
   private:
-    TaskHandle_t m_thread;    
+    TaskHandle_t m_thread;
 
     static void t(void * param) {
       Threading* t = (Threading*) param;

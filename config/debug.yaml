@@ -9,6 +9,7 @@ esphome:
     - src/sensors/timeout_sensor.h
     - src/sensors/planner_buffer_sensor.h
     - src/sensors/gcode_buffer_sensor.h
+    - src/sensors/stack_sensor.h
 
 sensor:
 # uptime sensor of the ESP to detect crashes
@@ -60,3 +61,21 @@ sensor:
   sensors:
   - name: "${printer_name} Printer GCode Buffer"
     unit_of_measurement: "number"
+# displays the remaining stack size per of threads which has never been used
+# there should be a reasonable buffer for the stack size
+- platform: custom
+  lambda: |-
+    auto senderStack = new sensors::StackSensor(get_sender(id(gcode_sender)));
+    App.register_component(senderStack);
+    return {senderStack};
+  sensors:
+  - name: "${printer_name} Sender Thread Stack Watermark"
+    unit_of_measurement: "bytes"
+- platform: custom
+  lambda: |-
+    auto readerStack = new sensors::StackSensor(get_reader(id(gcode_reader)));
+    App.register_component(readerStack);
+    return {readerStack};
+  sensors:
+  - name: "${printer_name} Reader Thread Stack Watermark"
+    unit_of_measurement: "bytes"

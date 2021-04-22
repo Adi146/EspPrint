@@ -8,7 +8,7 @@ GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize):
 }
 
 void GCodeSender::setup() {
-  Threading::setup();
+  Threading::setup(5 * 1024, configMAX_PRIORITIES - 1, 0);
 }
 
 void GCodeSender::loop() {
