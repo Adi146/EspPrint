@@ -71,7 +71,7 @@ class FilesystemCard extends LitElement {
       this._hass = hass;
       
       this._hass.connection.subscribeEvents((event) => {
-        this.files = JSON.parse(event.data.files);
+        this.files = JSON.parse(event.data.files).reverse();
         this.totalSize = event.data.totalSize;
         this.usedSize = event.data.usedSize;
       }, this.config.event);
