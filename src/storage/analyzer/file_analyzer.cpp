@@ -27,11 +27,7 @@ void Fileanalyzer::setup() {
   register_service(&Fileanalyzer::fireListEvent, "list_files");
   register_service(&Fileanalyzer::deleteFile, "delete_file", {"file"});
 
-  auto root = fs.open("/", FILE_READ);
-  if (root) {
-    addFile(root);
-  }
-  root.close();
+  addFile("/");
 }
 
 void Fileanalyzer::fireListEvent() {
@@ -71,17 +67,29 @@ void Fileanalyzer::addFile(fs::File& file) {
   }
 }
 
-void Fileanalyzer::deleteFile(std::string file) {
-  if(fs.remove(file.c_str())) {
-    for (auto it = m_files.begin(); it != m_files.end();) {
-      if(it->path == file) {
-        it = m_files.erase(it);
-      }
-      else {
-        it++;
-      }
-    }
+void Fileanalyzer::addFile(std::string path) {
+  auto file = fs.open(path.c_str(), FILE_READ);
+  if (file) {
+    addFile(file);
+  }
+  file.close();
+}
+
+void Fileanalyzer::deleteFile(std::string path) {
+  if(fs.remove(path.c_str())) {
+    removeFromList(path);
   }
 
   fireListEvent();
+}
+
+void Fileanalyzer::removeFromList(std::string path) {
+  for (auto it = m_files.begin(); it != m_files.end();) {
+    if(it->path == path) {
+      it = m_files.erase(it);
+    }
+    else {
+      it++;
+    }
+  }
 }

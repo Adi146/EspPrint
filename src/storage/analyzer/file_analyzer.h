@@ -34,8 +34,12 @@ namespace storage {
       void setup() override;
 
       void fireListEvent();
+
       void addFile(fs::File& file);
-      void deleteFile(std::string);
+      void addFile(std::string path);
+
+      void deleteFile(std::string path);
+      void removeFromList(std::string path);
     };
   }
 }

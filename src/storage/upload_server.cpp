@@ -35,9 +35,12 @@ void UploadServer::handleRequest(AsyncWebServerRequest *request) {
 }
 
 void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data, size_t len, bool final) {
+  std::string path("/");
+  path += filename.c_str();
+
   if (!index) {
-    ESP_LOGI("upload", "Upload Request %s", filename.c_str());
-    request->_tempFile = fs.open('/' + filename, FILE_WRITE);
+    ESP_LOGI("upload", "Upload Request %s", path.c_str());
+    request->_tempFile = fs.open(path.c_str(), FILE_WRITE);
   }
 
   if (!request->_tempFile) {
@@ -48,12 +51,11 @@ void UploadServer::handleUpload(AsyncWebServerRequest *request, const String &fi
 
   request->_tempFile.write(data, len);
   if (final) {
-    ESP_LOGI("upload", "Upload complete %s", filename.c_str());
+    ESP_LOGI("upload", "Upload complete %s", path.c_str());
     request->_tempFile.close();
 
-    fs::File file = fs.open('/' + filename, FILE_READ);
-    m_fileanalyzer->addFile(file);
-    file.close();
+    m_fileanalyzer->removeFromList(path);
+    m_fileanalyzer->addFile(path);
     m_fileanalyzer->fireListEvent();
 
     request->send(201, "text/plain", "Upload Success");
