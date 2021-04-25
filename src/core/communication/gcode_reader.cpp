@@ -9,7 +9,7 @@ GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender):
 }
 
 void GCodeReader::setup() {
-  Threading::setup(8 * 1024, configMAX_PRIORITIES - 1, 0);
+  Threading::setup(8 * 1024, configMAX_PRIORITIES - 1, 1);
 }
 
 void GCodeReader::loop() {
