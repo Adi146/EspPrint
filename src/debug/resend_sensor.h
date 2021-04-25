@@ -1,9 +1,10 @@
 #pragma once
 
-#include "gcode_sensor.h"
-#include "gcode_sender.h"
+#include "communication/gcode_sender.h"
 
-namespace sensors{
+using namespace core::communication;
+
+namespace debug {
   class ResendSensor: public PollingComponent, public Sensor {
   private:
     GCodeSender* m_sender;

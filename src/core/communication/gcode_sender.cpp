@@ -1,5 +1,7 @@
 #include "gcode_sender.h"
 
+using namespace core::communication;
+
 GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize): 
   UARTDevice(parent), 
   m_buffer(BUFFER_SIZE), 

@@ -4,12 +4,7 @@
 
 esphome:
   includes:
-    - src/sensors/memory_sensor.h
-    - src/sensors/resend_sensor.h
-    - src/sensors/timeout_sensor.h
-    - src/sensors/planner_buffer_sensor.h
-    - src/sensors/gcode_buffer_sensor.h
-    - src/sensors/stack_sensor.h
+    - src/debug/
 
 sensor:
 # uptime sensor of the ESP to detect crashes
@@ -18,7 +13,7 @@ sensor:
 # displays free memory of the ESP
 - platform: custom
   lambda: |-
-    auto memory = new sensors::MemorySensor();
+    auto memory = new debug::MemorySensor();
     App.register_component(memory);
     return {memory};
   sensors:
@@ -28,7 +23,7 @@ sensor:
 # don't worry about a few resends but a high number indicates a unstable connection to the printer
 - platform: custom
   lambda: |-
-    auto resend = new sensors::ResendSensor(get_sender(id(gcode_sender)));
+    auto resend = new debug::ResendSensor(get_sender(id(gcode_sender)));
     App.register_component(resend);
     return {resend};
   sensors:
@@ -38,7 +33,7 @@ sensor:
 # this should never happen. Timeouts are a indication for unstable connection to the printer and may result in blobs on your print
 - platform: custom
   lambda: |-
-    auto timeouts = new sensors::TimeoutSensor(get_sender(id(gcode_sender)));
+    auto timeouts = new debug::TimeoutSensor(get_sender(id(gcode_sender)));
     App.register_component(timeouts);
     return {timeouts};
   sensors:
@@ -47,7 +42,7 @@ sensor:
 # current free slots in the printers planner and gcode buffer. ADVANCED_OK is necessary
 - platform: custom
   lambda: |-
-    auto planner = new sensors::PlannerBufferSensor(get_sender(id(gcode_sender)));
+    auto planner = new debug::PlannerBufferSensor(get_sender(id(gcode_sender)));
     App.register_component(planner);
     return {planner};
   sensors:
@@ -55,7 +50,7 @@ sensor:
     unit_of_measurement: "number"
 - platform: custom
   lambda: |-
-    auto gcode = new sensors::GCodeBufferSensor(get_sender(id(gcode_sender)));
+    auto gcode = new debug::GCodeBufferSensor(get_sender(id(gcode_sender)));
     App.register_component(gcode);
     return {gcode};
   sensors:
@@ -65,7 +60,7 @@ sensor:
 # there should be a reasonable buffer for the stack size
 - platform: custom
   lambda: |-
-    auto senderStack = new sensors::StackSensor(get_sender(id(gcode_sender)));
+    auto senderStack = new debug::StackSensor(get_sender(id(gcode_sender)));
     App.register_component(senderStack);
     return {senderStack};
   sensors:
@@ -73,7 +68,7 @@ sensor:
     unit_of_measurement: "bytes"
 - platform: custom
   lambda: |-
-    auto readerStack = new sensors::StackSensor(get_reader(id(gcode_reader)));
+    auto readerStack = new debug::StackSensor(get_reader(id(gcode_reader)));
     App.register_component(readerStack);
     return {readerStack};
   sensors:
@@ -81,7 +76,7 @@ sensor:
     unit_of_measurement: "bytes"
 - platform: custom
   lambda: |-
-    auto fileStack = new sensors::StackSensor(get_fileReader(id(file_reader)));
+    auto fileStack = new debug::StackSensor(get_fileReader(id(file_reader)));
     App.register_component(fileStack);
     return {fileStack};
   sensors:

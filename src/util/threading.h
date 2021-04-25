@@ -1,12 +1,12 @@
 #pragma once
 
-namespace sensors {
+namespace debug {
   class StackSensor;
 }
 
 namespace util {
   class Threading {
-  friend sensors::StackSensor;
+  friend debug::StackSensor;
   public:
     virtual void setup(uint32_t stackSize, UBaseType_t priority, BaseType_t core) {
       xTaskCreatePinnedToCore(Threading::t, "threadLoop", stackSize, this, priority, &m_thread, core);

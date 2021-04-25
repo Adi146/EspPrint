@@ -44,7 +44,7 @@ uart:
 # packages (except common) can be enabled or disabled as needed
 # more configuration options can be found in these yaml files
 packages:
-  common: !include config/common.yaml
+  core: !include config/core.yaml
   storage: !include config/storage.yaml
   debug: !include config/debug.yaml
   camera: !include config/camera.yaml

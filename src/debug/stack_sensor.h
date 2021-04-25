@@ -3,7 +3,7 @@
 #include "esphome.h"
 #include "threading.h"
 
-namespace sensors {
+namespace debug {
   class StackSensor: public PollingComponent, public Sensor {
   public:
     StackSensor(util::Threading* thread):

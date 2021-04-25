@@ -3,17 +3,8 @@
 
 esphome:
   includes:
-    - src/gcode_sender.h
-    - src/gcode_sender.cpp
-    - src/gcode_reader.h
-    - src/gcode_reader.cpp
-    - src/util/ring_buffer.h
-    - src/util/threading.h
-    - src/sensors/gcode_sensor.h
-    - src/sensors/progress_sensor.h
-    - src/sensors/action_sensor.h
-    - src/sensors/temperature_sensor.h
-    - src/sensors/gcode_events.h
+    - src/core/
+    - src/util/
   libraries:
     - ArduinoJson-esphomelib
   on_boot:
@@ -42,19 +33,19 @@ custom_component:
 # core components for sending GCodes
 - id: gcode_sender
   lambda: |-
-    auto sender = new GCodeSender(id(uart_bus), 1);
+    auto sender = new core::communication::GCodeSender(id(uart_bus), 1);
     App.register_component(sender);
     return {sender};
 # core component for receiving GCode responses
 - id: gcode_reader
   lambda: |-
-    auto reader = new GCodeReader(id(uart_bus), get_sender(id(gcode_sender)));
+    auto reader = new core::communication::GCodeReader(id(uart_bus), get_sender(id(gcode_sender)));
     App.register_component(reader);
     return {reader};
 # forwards sent and received GCodes to Home Assistant for terminal card
 - id: events
   lambda: |-
-    auto events = new sensors::GCodeEvents("${printer_name_short}");
+    auto events = new core::analyzer::GCodeEvents("${printer_name_short}");
     App.register_component(events);
     get_sender(id(gcode_sender))->addSensor(events);
     get_reader(id(gcode_reader))->addSensor(events);
@@ -64,7 +55,7 @@ climate:
 # temperature control of hotends and heated bed
 - platform: custom
   lambda: |-
-    auto temperature = new sensors::TemperatureSensor(2, get_sender(id(gcode_sender)));
+    auto temperature = new core::analyzer::TemperatureSensor(2, get_sender(id(gcode_sender)));
     get_reader(id(gcode_reader))->addSensor(temperature);
     return temperature->getClimates();
   climates:
@@ -86,7 +77,7 @@ sensor:
 # these will update with M73 commands
 - platform: custom
   lambda: |-
-    auto progress = new sensors::ProgressSensor();
+    auto progress = new core::analyzer::ProgressSensor();
     get_sender(id(gcode_sender))->addSensor(progress);
     return {&progress->m_printProgress, &progress->m_remainingTime};
   sensors:
@@ -99,7 +90,7 @@ text_sensor:
 # sensor for HOST_ACTION_COMMANDS
 - platform: custom
   lambda: |-
-    auto action = new sensors::ActionSensor();
+    auto action = new core::analyzer::ActionSensor();
     get_reader(id(gcode_reader))->addSensor(action);
     return {action};
   text_sensors:

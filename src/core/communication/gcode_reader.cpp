@@ -1,5 +1,7 @@
 #include "gcode_reader.h"
 
+using namespace core::communication;
+
 GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender): 
   UARTDevice(parent), 
   m_sender(sender),

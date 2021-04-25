@@ -1,12 +1,13 @@
 #pragma once
 
-#include "gcode_sender.h"
+#include "communication/gcode_sender.h"
 #include "fs_adapter.h"
 #include "threading.h"
 
 using namespace esphome;
 using namespace esphome::custom_component;
 using namespace esphome::api;
+using namespace core::communication;
 
 #define get_fileReader(constructor) static_cast<storage::FileReader *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
