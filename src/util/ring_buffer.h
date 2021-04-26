@@ -5,14 +5,15 @@ namespace util {
   class RingBuffer {
   private:
     T* buffer;
-    uint64_t write_ptr = 0;
-    uint64_t read_ptr = 0;
+    uint64_t write_ptr;
+    uint64_t read_ptr;
     uint64_t capacity;
   
   public:
     RingBuffer(uint64_t capacity) {
         buffer = new T[capacity];
         this->capacity = capacity;
+        reset();
     }
   
     void push(const T& val) {
@@ -36,7 +37,7 @@ namespace util {
     }
   
     void reset() {
-      read_ptr = 0;
+      read_ptr = 1;
       write_ptr = 0;
     }
   
