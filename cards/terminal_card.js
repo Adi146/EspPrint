@@ -47,7 +47,7 @@ class TerminalCard extends LitElement {
             e.preventDefault();
             this.sendGCode();          
           }}">
-            <input type="text" id="input" @keydown="${(e) => {
+            <input type="text" id="gcode" placeholder="GCode" @keydown="${(e) => {
               this.onKeyPress(e);
             }}"/>
             <input type="submit" value="Send"/>
@@ -65,8 +65,8 @@ class TerminalCard extends LitElement {
   }
 
   sendGCode() {
-    var input = this.shadowRoot.getElementById("input");
-    var value = input.value;
+    var gcode = this.shadowRoot.getElementById("gcode");
+    var value = gcode.value;
     
     if (value != "") {
       const [domain, service] = this.config.service.split('.', 2);
@@ -74,9 +74,9 @@ class TerminalCard extends LitElement {
         gcode: value
       });
   
-      this.history.push(input.value);
+      this.history.push(gcode.value);
       this.historyIndex = Number.POSITIVE_INFINITY;
-      input.value = '';
+      gcode.value = '';
     }
   }
 
@@ -100,9 +100,9 @@ class TerminalCard extends LitElement {
 
     var value = this.historyIndex < this.history.length ? this.history[this.historyIndex] : "";
 
-    var input = this.shadowRoot.getElementById("input");
-    input.value = value;
-    input.selectionStart = value.length;
+    var gcode = this.shadowRoot.getElementById("gcode");
+    gcode.value = value;
+    gcode.selectionStart = value.length;
   }
 
   set hass(hass) {
@@ -152,7 +152,7 @@ class TerminalCard extends LitElement {
         padding: 0 16px;
         height: 200px;
       }
-      #input {
+      #gcode {
         margin: 10px 8px;
       }
       .source {
@@ -162,9 +162,10 @@ class TerminalCard extends LitElement {
       input[type=text] {
         width: 79%;
         border: none;
+        font-size: inherit;
         color: var(--primary-text-color);
         background-color: transparent;
-        border-bottom: 1px solid var(--primary-text-color);
+        border-bottom: 1px solid var(--secondary-text-color);
       }
       input[type=submit] {
         width: 15%;
