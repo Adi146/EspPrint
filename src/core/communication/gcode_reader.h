@@ -8,8 +8,6 @@
 #include <regex>
 #include <string>
 
-#define READER_SENSOR_BUFFER_SIZE 20
-
 using namespace core::analyzer;
 using namespace esphome;
 using namespace esphome::uart;
