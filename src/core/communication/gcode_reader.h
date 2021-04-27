@@ -1,7 +1,7 @@
 #pragma once
 
 #include "esphome.h"
-#include "analyzer/gcode_analyzer.h"
+#include "analyzer/gcode_queue.h"
 #include "gcode_sender.h"
 #include "ring_buffer.h"
 #include "threading.h"
@@ -25,14 +25,12 @@ namespace core {
       std::regex m_resendRgx = std::regex(R"(Resend: (\d+))");
       std::string m_busyStr = "echo:busy:";
 
-      std::vector<GCodeAnalyzer*> m_sensors = std::vector<GCodeAnalyzer*>();
-
       GCodeSender* m_sender;
 
       char m_readBuffer[MAX_GCODE_LENGTH];
       int m_readBuffer_ptr = 0;
-
-      util::RingBuffer<std::string> m_sensorBuffer;
+      
+      GCodeQueue* m_analyzerQueue;
 
     protected:
       bool handleOK(std::string& line);
@@ -42,19 +40,13 @@ namespace core {
       bool handleBusy(std::string& line);
 
     public:
-      GCodeReader(UARTComponent* parent, GCodeSender* sender);
+      GCodeReader(UARTComponent* parent, GCodeSender* sender, GCodeQueue* analyzerQueue);
 
       void setup() override;
-
-      void loop() override;
 
       void threadLoop() override;
 
       bool readLine(std::string& line);
-
-      void addSensor(GCodeAnalyzer* sensor) {
-        m_sensors.push_back(sensor);
-      }
     };
   }
 }

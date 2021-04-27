@@ -33,22 +33,26 @@ custom_component:
 # core components for sending GCodes
 - id: gcode_sender
   lambda: |-
-    auto sender = new core::communication::GCodeSender(id(uart_bus), 1);
+    auto sender = new core::communication::GCodeSender(id(uart_bus), 1, get_analyzerQueue(id(queue)));
     App.register_component(sender);
     return {sender};
 # core component for receiving GCode responses
 - id: gcode_reader
   lambda: |-
-    auto reader = new core::communication::GCodeReader(id(uart_bus), get_sender(id(gcode_sender)));
+    auto reader = new core::communication::GCodeReader(id(uart_bus), get_sender(id(gcode_sender)), get_analyzerQueue(id(queue)));
     App.register_component(reader);
     return {reader};
+- id: queue
+  lambda: |-
+    auto queue = new core::analyzer::GCodeQueue();
+    App.register_component(queue);
+    return {queue};
 # forwards sent and received GCodes to Home Assistant for terminal card
 - id: events
   lambda: |-
     auto events = new core::analyzer::GCodeEvents("${printer_name_short}");
     App.register_component(events);
-    get_sender(id(gcode_sender))->addSensor(events);
-    get_reader(id(gcode_reader))->addSensor(events);
+    get_analyzerQueue(id(queue))->addSensor(events);
     return {events};
 
 climate:
@@ -56,7 +60,7 @@ climate:
 - platform: custom
   lambda: |-
     auto temperature = new core::analyzer::TemperatureSensor(2, get_sender(id(gcode_sender)));
-    get_reader(id(gcode_reader))->addSensor(temperature);
+    get_analyzerQueue(id(queue))->addSensor(temperature);
     return temperature->getClimates();
   climates:
   - name: "${printer_name} Tool Temperature"
@@ -78,7 +82,7 @@ sensor:
 - platform: custom
   lambda: |-
     auto progress = new core::analyzer::ProgressSensor();
-    get_sender(id(gcode_sender))->addSensor(progress);
+    get_analyzerQueue(id(queue))->addSensor(progress);
     return {&progress->m_printProgress, &progress->m_remainingTime};
   sensors:
   - name: "${printer_name} Print Progress"
@@ -91,7 +95,7 @@ text_sensor:
 - platform: custom
   lambda: |-
     auto action = new core::analyzer::ActionSensor();
-    get_reader(id(gcode_reader))->addSensor(action);
+    get_analyzerQueue(id(queue))->addSensor(action);
     return {action};
   text_sensors:
   - name: "${printer_name} Current Action"

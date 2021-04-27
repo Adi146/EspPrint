@@ -16,6 +16,10 @@ namespace core {
       ProgressSensor(): GCodeAnalyzer() {}
 
       void handleLine(std::string& gcode, GCodeSource source) override {
+        if (source != GCodeSource::SENDER) {
+          return;
+        }
+
         std::smatch match;
         if (std::regex_search(gcode, match, m_M73Rgx)) {
           m_printProgress.publish_state(atoi(match[1].str().c_str()));

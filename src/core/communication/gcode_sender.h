@@ -4,7 +4,7 @@
 #include "esphome.h"
 #include "ring_buffer.h"
 #include "threading.h"
-#include "analyzer/gcode_analyzer.h"
+#include "analyzer/gcode_queue.h"
 #include <string>
 #include <mutex>
 #include <vector>
@@ -40,24 +40,21 @@ namespace core {
 
       int64_t m_resendLineNumber = -1;
 
-      std::vector<GCodeAnalyzer*> m_sensors = std::vector<GCodeAnalyzer*>();
-      util::RingBuffer<std::string> m_sensorBuffer;
-
       uint32_t m_lastCommandTimestamp;
 
       std::mutex m_sendMutex;
       std::mutex m_bufferMutex;
+
+      GCodeQueue* m_analyzerQueue;
 
       void ok(int plannerBuffer, int commandBuffer, uint64_t lineNumber);
 
       void _sendGCode(std::string gcode, uint64_t lineNumber);
 
     public:
-      GCodeSender(UARTComponent *parent, int resendBufferSize);
+      GCodeSender(UARTComponent *parent, int resendBufferSize, GCodeQueue* analyzerQueue);
 
       void setup() override;
-
-      void loop() override;
 
       void threadLoop() override;
 
@@ -85,10 +82,6 @@ namespace core {
 
       int getFreeGCodeBuffer() {
         return m_okGCodeBuffer;
-      }
-
-      void addSensor(GCodeAnalyzer* sensor) {
-        m_sensors.push_back(sensor);
       }
     };
   }

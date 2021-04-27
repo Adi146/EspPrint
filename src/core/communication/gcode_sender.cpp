@@ -2,27 +2,15 @@
 
 using namespace core::communication;
 
-GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize): 
+GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize, GCodeQueue* analyzerQueue): 
   UARTDevice(parent), 
   m_buffer(BUFFER_SIZE), 
   m_resendBuffer(resendBufferSize),
-  m_sensorBuffer(SENDER_SENSOR_BUFFER_SIZE) {
+  m_analyzerQueue(analyzerQueue) {
 }
 
 void GCodeSender::setup() {
   Threading::setup(4 * 1024, configMAX_PRIORITIES - 1, 1);
-}
-
-void GCodeSender::loop() {
-  while(!m_sensorBuffer.empty()) {
-    std::string line = m_sensorBuffer.pop();
-
-    ESP_LOGI("gcode_sender", "SEND: %s", line.c_str());
-
-    for (auto sensor: m_sensors) {
-      sensor->handleLine(line, GCodeSource::SENDER);
-    } 
-  }
 }
 
 void GCodeSender::threadLoop() {
@@ -71,10 +59,8 @@ void GCodeSender::_sendGCode(std::string gcode, uint64_t lineNumber) {
   write_str(buffer);
   write('\n');
 
-  if(!m_sensorBuffer.full()) {
-    std::string strGCode(buffer);
-    m_sensorBuffer.push(strGCode);
-  }
+  std::string strGCode(buffer);
+  m_analyzerQueue->handleLine(strGCode, GCodeSource::SENDER);
 
   m_lastCommandTimestamp = millis();
 }

@@ -13,6 +13,10 @@ namespace core {
       ActionSensor(): GCodeAnalyzer(), TextSensor() {}
 
       void handleLine(std::string& gcode, GCodeSource source) override {
+        if (source != GCodeSource::READER) {
+          return;
+        }
+
         if (gcode.rfind(m_actionStr, 0) == 0) {
           publish_state(gcode.substr(m_actionStr.length()));
         }

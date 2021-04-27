@@ -2,26 +2,14 @@
 
 using namespace core::communication;
 
-GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender): 
+GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender, GCodeQueue* analyzerQueue): 
   UARTDevice(parent), 
   m_sender(sender),
-  m_sensorBuffer(READER_SENSOR_BUFFER_SIZE){
+  m_analyzerQueue(analyzerQueue) {
 }
 
 void GCodeReader::setup() {
   Threading::setup(8 * 1024, configMAX_PRIORITIES - 1, 1);
-}
-
-void GCodeReader::loop() {
-  while(!m_sensorBuffer.empty()) {
-    std::string line = m_sensorBuffer.pop();
-
-    ESP_LOGI("gcode_reader", "RECV: %s", line.c_str());
-
-    for (auto sensor: m_sensors) {
-      sensor->handleLine(line, GCodeSource::READER);
-    } 
-  }
 }
 
 bool GCodeReader::readLine(std::string& line) {
@@ -80,8 +68,6 @@ void GCodeReader::threadLoop() {
   if (readLine(line)) {
     handleOK(line) || handleBusy(line) || handleResend(line);
 
-    if(!m_sensorBuffer.full()) {
-      m_sensorBuffer.push(line);
-    }
+    m_analyzerQueue->handleLine(line, GCodeSource::READER);
   }
 }

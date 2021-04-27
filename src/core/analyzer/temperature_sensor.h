@@ -94,6 +94,10 @@ namespace core {
       }
 
       void handleLine(std::string& gcode, GCodeSource source) override {
+        if (source != GCodeSource::READER) {
+          return;
+        }
+
         auto begin = std::sregex_iterator(gcode.begin(), gcode.end(), m_temperatureRgx);
         auto end = std::sregex_iterator();
 
