@@ -45,7 +45,7 @@ custom_component:
 # component to enable filesystem card
 - id: analyzer
   lambda: |-
-    auto analyzer = new storage::analyzer::Fileanalyzer("${printer_name_short}");
+    auto analyzer = new storage::analyzer::Fileanalyzer();
     App.register_component(analyzer);
     return {analyzer};
 

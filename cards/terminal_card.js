@@ -110,11 +110,13 @@ class TerminalCard extends LitElement {
       this._hass = hass;
 
       this._hass.connection.subscribeEvents((event) => {
-        var output = this.shadowRoot.getElementById("output");
-        this.autoscroll = output.scrollTop >= (output.scrollHeight - output.offsetHeight - 10);
-
-        this.gcodes = this.gcodes.concat(JSON.parse(event.data.gcodes));
-      }, this.config.event);
+        if (event.data.device_id == this.config.device_id) {
+          var output = this.shadowRoot.getElementById("output");
+          this.autoscroll = output.scrollTop >= (output.scrollHeight - output.offsetHeight - 10);
+  
+          this.gcodes = this.gcodes.concat(JSON.parse(event.data.gcodes));
+        }
+      }, "esphome.espprint_gcodes");
     }
 
     this._hass = hass;
@@ -122,12 +124,12 @@ class TerminalCard extends LitElement {
 
   setConfig(config) {
     if (config.printer_name) {
-      this.config.event = "esphome." + config.printer_name + "_gcode_event";
+      this.config.device_id = "espprint_" + config.printer_name;
       this.config.service = "esphome.espprint_" + config.printer_name + "_send_gcode";
     }
 
-    if (config.event) {
-      this.config.event = config.event;
+    if (config.device_id) {
+      this.config.device_id = config.device_id;
     }
     if (config.service) {
       this.config.service = config.service;
@@ -137,8 +139,8 @@ class TerminalCard extends LitElement {
   }
 
   checkConfig() {
-    if (!this.config.event) {
-      throw new Error("event undefined");
+    if (!this.config.device_id) {
+      throw new Error("device_id undefined");
     }
     if (!this.config.service) {
       throw new Error("service undefined");

@@ -8,10 +8,9 @@ void Fileinfo::fillJsonObject(JsonObject& obj) {
   obj["lastWrite"] = lastWrite;
 }
 
-Fileanalyzer::Fileanalyzer(std::string eventPrefix):
+Fileanalyzer::Fileanalyzer():
   Component(),
-  CustomAPIDevice(),
-  m_eventPrefix(eventPrefix){
+  CustomAPIDevice(){
 }
 
 Fileinfo Fileanalyzer::analyze(fs::File& file) {
@@ -41,7 +40,8 @@ void Fileanalyzer::fireListEvent() {
   std::string tmp;
   serializeJson(doc, tmp);
 
-  fire_homeassistant_event("esphome." + m_eventPrefix + "_files", {
+  fire_homeassistant_event("esphome.espprint_files", {
+    { "device_id", App.get_name() },
     { "files", tmp },
     { "totalSize", to_string(fsAdapter->getTotalSize()) },
     { "usedSize", to_string(fsAdapter->getUsedSize()) }

@@ -50,7 +50,7 @@ custom_component:
 # forwards sent and received GCodes to Home Assistant for terminal card
 - id: events
   lambda: |-
-    auto events = new core::analyzer::GCodeEvents("${printer_name_short}");
+    auto events = new core::analyzer::GCodeEvents();
     App.register_component(events);
     get_analyzerQueue(id(queue))->addSensor(events);
     return {events};

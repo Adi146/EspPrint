@@ -21,15 +21,13 @@ namespace storage {
 
     class Fileanalyzer: public Component, public CustomAPIDevice {
     private:
-      std::string m_eventPrefix;
-
       std::vector<Fileinfo> m_files;
 
     protected:
       virtual Fileinfo analyze(fs::File& file);
 
     public:
-      Fileanalyzer(std::string eventPrefix);
+      Fileanalyzer();
 
       void setup() override;
 

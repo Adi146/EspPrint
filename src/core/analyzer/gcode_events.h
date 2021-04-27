@@ -16,16 +16,13 @@ namespace core {
 
     class GCodeEvents: public GCodeAnalyzer, public PollingComponent, public CustomAPIDevice {
     private:
-      std::string m_eventPrefix;
-
       util::RingBuffer<BufferElement> m_buffer;
 
     public:
-      GCodeEvents(std::string eventPrefix): 
+      GCodeEvents(): 
         GCodeAnalyzer(),
         PollingComponent(1000),
         CustomAPIDevice(),
-        m_eventPrefix(eventPrefix), 
         m_buffer(EVENTS_BUFFER_SIZE){
       }
 
@@ -52,8 +49,9 @@ namespace core {
         serializeJson(doc, tmp);
 
         if (i != 0) {
-          fire_homeassistant_event("esphome." + m_eventPrefix + "_gcode_event", {
-            {"gcodes", tmp}
+          fire_homeassistant_event("esphome.espprint_gcodes", {
+            { "device_id", App.get_name() },
+            { "gcodes", tmp }
           });
         }
       }

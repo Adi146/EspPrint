@@ -71,10 +71,12 @@ class FilesystemCard extends LitElement {
       this._hass = hass;
       
       this._hass.connection.subscribeEvents((event) => {
-        this.files = JSON.parse(event.data.files).reverse();
-        this.totalSize = event.data.totalSize;
-        this.usedSize = event.data.usedSize;
-      }, this.config.event);
+        if (event.data.device_id == this.config.device_id) {
+          this.files = JSON.parse(event.data.files).reverse();
+          this.totalSize = event.data.totalSize;
+          this.usedSize = event.data.usedSize;
+        }
+      }, "esphome.espprint_files");
 
       const [domain, service] = this.config.list_service.split('.', 2);
       this._hass.callService(domain, service, {});
@@ -83,14 +85,14 @@ class FilesystemCard extends LitElement {
 
   setConfig(config) {
     if (config.printer_name) {
-      this.config.event = "esphome." + config.printer_name + "_files";
+      this.config.device_id = "espprint_" + config.printer_name;
       this.config.list_service = "esphome.espprint_" + config.printer_name + "_list_files";
       this.config.print_service = "esphome.espprint_" + config.printer_name + "_print_file";
       this.config.delete_service = "esphome.espprint_" + config.printer_name + "_delete_file";
     }
 
-    if (config.event) {
-      this.config.event = config.event;
+    if (config.device_id) {
+      this.config.device_id = config.device_id;
     }
     if (config.list_service) {
       this.config.list_service = config.list_service;
@@ -106,8 +108,8 @@ class FilesystemCard extends LitElement {
   }
 
   checkConfig() {
-    if (!this.config.event) {
-      throw new Error("event undefined");
+    if (!this.config.device_id) {
+      throw new Error("device_id undefined");
     }
     if (!this.config.list_service) {
       throw new Error("list_service undefined");
