@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace core {
   namespace analyzer {
     enum GCodeSource {
