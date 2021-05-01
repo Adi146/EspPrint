@@ -3,7 +3,7 @@ light:
   name: ${printer_name} Lights
   id: my_light
   chipset: WS2812B
-  pin: GPIO16
+  pin: GPIO2
   num_leds: 18
   rgb_order: GRB
   effects:

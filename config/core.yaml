@@ -24,11 +24,6 @@ api:
       then:
         - lambda: get_sender(id(gcode_sender))->sendGCode(gcode);
 
-# disable logging to uart.
-# do not touch this otherwise the GCode communication will break!
-logger:
-  baud_rate: 0
-
 custom_component:
 # core components for sending GCodes
 - id: gcode_sender

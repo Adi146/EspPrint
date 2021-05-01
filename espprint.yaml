@@ -32,12 +32,14 @@ api:
 
 ota:
 
-# gpio pins and baudrate for uart configuration. 
-# GPIO1 and GPIO3 are labeled as TX and RX on most ESPs
+# GPIO pins and baudrate for uart configuration.
+# Do not use UART0 (GPIO1 and GPIO3) for communication with the printer as it is used for logging
+# UART1 - TX: GPIO9, RX: GPIO10
+# UART2 - TX: GPIO16, RX: GPIO17
 uart:
   id: uart_bus
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+  tx_pin: GPIO16
+  rx_pin: GPIO17
   baud_rate: 115200
   rx_buffer_size: 1024
 
