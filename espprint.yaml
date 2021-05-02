@@ -51,3 +51,4 @@ packages:
   debug: !include config/debug.yaml
   camera: !include config/camera.yaml
   lights: !include config/lights.yaml
+  scale: !include config/scale.yaml

@@ -1,0 +1,12 @@
+sensor:
+- platform: hx711
+  name: "${printer_name} Filament Weight"
+  dout_pin: GPIO25
+  clk_pin: GPIO32
+  gain: 128
+  update_interval: 10s
+  filters:
+  - calibrate_linear:
+    - 240000 -> 0
+    - 700000 -> 1000
+  unit_of_measurement: g
