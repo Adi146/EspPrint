@@ -49,6 +49,5 @@ packages:
   core: !include config/core.yaml
   storage: !include config/storage.yaml
   debug: !include config/debug.yaml
-  camera: !include config/camera.yaml
   lights: !include config/lights.yaml
   scale: !include config/scale.yaml

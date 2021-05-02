@@ -1,0 +1,35 @@
+substitutions:
+  # prefix of the sensor names
+  printer_name: dev
+  # used for hostname and events. Use only lower case and not whitespaces
+  printer_name_short: dev
+
+esphome:
+  name: espprint_${printer_name_short}_cam
+  platform: ESP32
+  board: nodemcu-32s
+
+# use secrets.yaml for wifi configuration
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${printer_name} Fallback Hotspot"
+    password: !secret fallback_password
+
+captive_portal:
+
+# Enable logging
+logger:
+  level: INFO
+
+# Enable Home Assistant API
+api:
+  services: []
+
+ota:
+
+packages:
+  camera: !include config/camera.yaml
