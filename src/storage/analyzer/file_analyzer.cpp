@@ -30,7 +30,7 @@ void Fileanalyzer::setup() {
 }
 
 void Fileanalyzer::fireListEvent() {
-  DynamicJsonDocument doc(96 * m_files.size());
+  DynamicJsonDocument doc(160 + 96 * m_files.size());
 
   for (auto i = 0; i < m_files.size(); i++) {
     JsonObject obj = doc.createNestedObject();
