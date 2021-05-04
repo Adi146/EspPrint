@@ -7,6 +7,8 @@
 using namespace esphome;
 using namespace esphome::custom_component;
 
+#define QUEUE_SIZE 200
+
 #define get_analyzerQueue(constructor) static_cast<GCodeQueue *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
 namespace core {
@@ -28,6 +30,10 @@ namespace core {
       GCodeQueue();
 
       virtual void handleLine(std::string& gcode, GCodeSource source) override;
+
+      virtual float get_setup_priority() const override {
+        return setup_priority::LATE;
+      }
 
       void loop() override;
 

@@ -8,7 +8,9 @@ GCodeQueue::GCodeQueue() :
 
 void GCodeQueue::handleLine(std::string& gcode, GCodeSource source) {
   m_queueMutex.lock();
-  m_queue.push({gcode, source});
+  if (m_queue.size() < QUEUE_SIZE) {
+    m_queue.push({gcode, source});
+  }  
   m_queueMutex.unlock();
 }
 
