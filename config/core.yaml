@@ -84,13 +84,3 @@ sensor:
     unit_of_measurement: "%"
   - name: "${printer_name} Remaining Time"
     unit_of_measurement: "min"
-
-text_sensor:
-# sensor for HOST_ACTION_COMMANDS
-- platform: custom
-  lambda: |-
-    auto action = new core::analyzer::ActionSensor();
-    get_analyzerQueue(id(queue))->addSensor(action);
-    return {action};
-  text_sensors:
-  - name: "${printer_name} Current Action"

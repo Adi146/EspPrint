@@ -48,6 +48,7 @@ uart:
 packages:
   core: !include config/core.yaml
   storage: !include config/storage.yaml
+  action: !include config/action.yaml
   debug: !include config/debug.yaml
   lights: !include config/lights.yaml
   scale: !include config/scale.yaml
