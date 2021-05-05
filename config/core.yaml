@@ -15,15 +15,6 @@ esphome:
     # enable auto temperature report
     - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
 
-api:
-  services:
-    # service to send gcodes over home assistant
-    - service: send_gcode
-      variables:
-        gcode: string
-      then:
-        - lambda: get_sender(id(gcode_sender))->sendGCode(gcode);
-
 custom_component:
 # core components for sending GCodes
 - id: gcode_sender

@@ -14,6 +14,7 @@
 
 using namespace core::analyzer;
 using namespace esphome;
+using namespace esphome::api;
 using namespace esphome::uart;
 using namespace esphome::custom_component;
 
@@ -25,7 +26,7 @@ namespace storage {
 
 namespace core {
   namespace communication {
-    class GCodeSender : public Component, public UARTDevice, public util::Threading {
+    class GCodeSender : public Component, public CustomAPIDevice, public UARTDevice, public util::Threading {
     friend storage::FileReader;
 
     protected:

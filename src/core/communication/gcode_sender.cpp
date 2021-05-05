@@ -3,6 +3,8 @@
 using namespace core::communication;
 
 GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize, GCodeQueue* analyzerQueue): 
+  Component(),
+  CustomAPIDevice(),
   UARTDevice(parent), 
   m_buffer(BUFFER_SIZE), 
   m_resendBuffer(resendBufferSize),
@@ -10,6 +12,8 @@ GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize, GCodeQueue
 }
 
 void GCodeSender::setup() {
+  register_service(&GCodeSender::sendGCode, "send_gcode", {"gcode"});
+
   Threading::setup(4 * 1024, configMAX_PRIORITIES - 1, 1);
 }
 
