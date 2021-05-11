@@ -18,6 +18,7 @@ namespace storage {
 
     File m_file;
 
+    std::string m_tmpGCode;
     std::vector<std::string> m_cancelGCodes;
 
     void readNextGCode(std::string& gcode);

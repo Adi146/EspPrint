@@ -39,15 +39,13 @@ void FileReader::setup() {
 }
 
 void FileReader::threadLoop() {
-  m_sender->m_bufferMutex.lock();
-  if (m_file.available() && !m_sender->m_buffer.full()) {
-    std::string gcode;
-    readNextGCode(gcode);
-    if (!gcode.empty()) {
-      m_sender->m_buffer.push(gcode);
-    }
+  while (m_file.available() && m_tmpGCode.empty()) {
+    readNextGCode(m_tmpGCode);
   }
-  m_sender->m_bufferMutex.unlock();
+
+  if(!m_tmpGCode.empty() && m_sender->sendGCode(m_tmpGCode, 0)) {
+    m_tmpGCode = "";
+  }
 }
 
 void FileReader::print(std::string filename) {
@@ -68,13 +66,10 @@ void FileReader::print(std::string filename) {
 }
 
 void FileReader::stop() {
-  m_sender->m_bufferMutex.lock();
   m_file.close();
-  m_sender->m_buffer.setReadPtr(m_sender->m_buffer.getWritePtr());
+  m_tmpGCode = "";
 
   for (auto it = m_cancelGCodes.begin(); it != m_cancelGCodes.end(); it++){
-    m_sender->m_buffer.push(*it);
+    m_sender->sendGCode(*it);
   }
-
-  m_sender->m_bufferMutex.unlock();
 }

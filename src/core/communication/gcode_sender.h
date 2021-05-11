@@ -2,15 +2,14 @@
 #pragma once
 
 #include "esphome.h"
-#include "ring_buffer.h"
 #include "threading.h"
 #include "analyzer/gcode_queue.h"
 #include <string>
-#include <mutex>
-#include <vector>
+#include <deque>
 
-#define BUFFER_SIZE 50
+#define INPUT_BUFFER_SIZE 50
 #define MAX_GCODE_LENGTH 256
+#define EMERGENCY_GCODE { "M108", "M112", "M410", "M876" }
 
 using namespace core::analyzer;
 using namespace esphome;
@@ -20,34 +19,31 @@ using namespace esphome::custom_component;
 
 #define get_sender(constructor) static_cast<GCodeSender *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
-namespace storage {
-  class FileReader;
-}
-
 namespace core {
   namespace communication {
     class GCodeSender : public Component, public CustomAPIDevice, public UARTDevice, public util::Threading {
-    friend storage::FileReader;
 
-    protected:
-      util::RingBuffer<std::string> m_buffer;
-      util::RingBuffer<std::string> m_resendBuffer;
+    private:
+      int m_printerGCodeBufferSize;
+
+      uint64_t m_sentLineNumber = 0;
+      uint64_t m_processedLineNumber = 0;
+
+      std::queue<std::string> m_inputBuffer;
+      std::deque<std::string> m_resendBuffer;
 
       int m_resendCounter = 0;
       int m_timeoutCounter = 0;
       int m_okPlannerBuffer = 0;
       int m_okGCodeBuffer = 0;
 
-      int64_t m_resendLineNumber = -1;
-
       uint32_t m_lastCommandTimestamp;
 
-      std::mutex m_sendMutex;
-      std::mutex m_bufferMutex;
-
+      std::mutex m_inputBufferMutex;
+      
       GCodeQueue* m_analyzerQueue;
 
-      void ok(int plannerBuffer, int commandBuffer, uint64_t lineNumber);
+      void ok(int plannerBuffer, int commandBuffer, uint64_t lineNumber, bool timeout);
 
       void _sendGCode(std::string gcode, uint64_t lineNumber);
 
@@ -58,7 +54,11 @@ namespace core {
 
       void threadLoop() override;
 
-      void sendGCode(std::string gcode);
+      bool sendGCode(std::string gcode, int timeout);
+
+      void sendGCode(std::string gcode) {
+        sendGCode(gcode, 500);
+      }
 
       void reset();
 
