@@ -59,7 +59,7 @@ bool GCodeSender::sendGCode(std::string gcode, int timeout) {
   for (auto it: EMERGENCY_GCODE) {
     if (gcode.rfind(it, 0) == 0) {
       m_resendBuffer.push_back(gcode);
-      _sendGCode(gcode, ++m_sentLineNumber);
+      _sendGCode(gcode, m_sentLineNumber++);
       return true;
     }
   }
