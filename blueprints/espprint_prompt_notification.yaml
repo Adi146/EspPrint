@@ -1,0 +1,65 @@
+blueprint:
+  name: EspPrint Prompt Notification
+  description: Send 3D Printer Prompts via Notifications
+  domain: automation
+  input:
+    device_id:
+      name: Printer Name
+      description: lower case name of EspPrint
+      selector:
+        text:
+    notify_device:
+      name: Target Notification Device
+      description: Target Device for Notifications
+      selector:
+        device:
+          integration: mobile_app
+
+variables:
+  device_id: !input device_id
+
+trigger:
+- platform: event
+  event_type: esphome.espprint_action
+  event_data: {}
+- platform: event
+  event_type: mobile_app_notification_action
+  event_data: {}
+
+condition:
+  - condition: or
+    conditions:
+      - condition: template
+        value_template: '{{ trigger.event.data.device_id == "espprint_" + device_id }}'
+      - condition: template
+        value_template: '{{ trigger.event.data.tag == "espprint_" + device_id }}'
+
+action:
+- choose:
+  - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.event_type == "esphome.espprint_action" }}'
+    sequence:  
+      - domain: mobile_app
+        type: notify
+        device_id: !input notify_device
+        title: '{{ trigger.event.data.printer_name }}'
+        message: '{{ trigger.event.data.message }}'
+        data:
+          tag: '{{ trigger.event.data.device_id }}'
+          actions: |-
+            [ {%- for button in trigger.event.data.buttons|from_json %}   
+              {
+                'action': '{{ button.gcode }}',
+                'title': '{{ button.title }}',
+              }{%- if not loop.last %}, {% endif -%}
+            {%- endfor %} ]
+  - conditions:
+      - condition: template
+        value_template: '{{ trigger.event.event_type == "mobile_app_notification_action" }}'
+    sequence:
+      - service: 'esphome.{{ trigger.event.data.tag }}_send_gcode'
+        data:
+          gcode: '{{ trigger.event.data.action }}'
+          
+mode: single
