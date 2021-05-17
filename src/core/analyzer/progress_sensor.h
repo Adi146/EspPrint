@@ -2,6 +2,7 @@
 
 #include "esphome.h"
 #include "gcode_analyzer.h"
+#include <regex>
 
 namespace core {
   namespace analyzer {
