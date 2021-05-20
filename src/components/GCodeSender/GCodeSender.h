@@ -1,9 +1,11 @@
 
 #pragma once
 
-#include "esphome.h"
+#include "esphome/core/component.h"
+#include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/uart/uart.h"
+#include "esphome/components/GCodeQueue/GCodeQueue.h"
 #include "threading.h"
-#include "analyzer/gcode_queue.h"
 #include <string>
 #include <deque>
 
@@ -15,7 +17,6 @@ using namespace core::analyzer;
 using namespace esphome;
 using namespace esphome::api;
 using namespace esphome::uart;
-using namespace esphome::custom_component;
 
 #define get_sender(constructor) static_cast<GCodeSender *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
@@ -24,7 +25,7 @@ namespace core {
     class GCodeSender : public Component, public CustomAPIDevice, public UARTDevice, public util::Threading {
 
     private:
-      int m_printerGCodeBufferSize;
+      int m_printerGCodeBufferSize = 1;
 
       uint64_t m_sentLineNumber = 0;
       uint64_t m_processedLineNumber = 0;
@@ -48,7 +49,7 @@ namespace core {
       void _sendGCode(std::string gcode, uint64_t lineNumber);
 
     public:
-      GCodeSender(UARTComponent *parent, int resendBufferSize, GCodeQueue* analyzerQueue);
+      GCodeSender(GCodeQueue* analyzerQueue);
 
       void setup() override;
 
@@ -82,6 +83,10 @@ namespace core {
 
       int getFreeGCodeBuffer() {
         return m_okGCodeBuffer;
+      }
+
+      void setResendBufferSize(int val) {
+        m_printerGCodeBufferSize = val;
       }
     };
   }

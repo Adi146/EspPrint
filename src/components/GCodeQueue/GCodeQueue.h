@@ -1,11 +1,11 @@
 #pragma once
 
-#include "esphome.h"
+#include "esphome/core/component.h"
 #include "gcode_analyzer.h"
+#include <queue>
 #include <mutex>
 
 using namespace esphome;
-using namespace esphome::custom_component;
 
 #define QUEUE_SIZE 200
 

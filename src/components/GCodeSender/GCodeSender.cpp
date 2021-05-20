@@ -1,12 +1,11 @@
-#include "gcode_sender.h"
+#include "GCodeSender.h"
 
 using namespace core::communication;
 
-GCodeSender::GCodeSender(UARTComponent *parent, int resendBufferSize, GCodeQueue* analyzerQueue): 
+GCodeSender::GCodeSender(GCodeQueue* analyzerQueue): 
   Component(),
   CustomAPIDevice(),
-  UARTDevice(parent), 
-  m_printerGCodeBufferSize(resendBufferSize),
+  UARTDevice(),
   m_analyzerQueue(analyzerQueue) {
 }
 

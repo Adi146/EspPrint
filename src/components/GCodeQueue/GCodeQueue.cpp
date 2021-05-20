@@ -1,4 +1,4 @@
-#include "gcode_queue.h"
+#include "GCodeQueue.h"
 
 using namespace core::analyzer;
 
