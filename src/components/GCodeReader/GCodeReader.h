@@ -1,9 +1,10 @@
 #pragma once
 
-#include "esphome.h"
-#include "analyzer/gcode_queue.h"
-#include "gcode_sender.h"
-#include "ring_buffer.h"
+#include "esphome/core/component.h"
+#include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/uart/uart.h"
+#include "esphome/components/GCodeQueue/GCodeQueue.h"
+#include "esphome/components/GCodeSender/GCodeSender.h"
 #include "threading.h"
 #include <regex>
 #include <string>
@@ -11,9 +12,6 @@
 using namespace core::analyzer;
 using namespace esphome;
 using namespace esphome::uart;
-using namespace esphome::custom_component;
-
-#define get_reader(constructor) static_cast<GCodeReader *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
 
 namespace core {
   namespace communication {
@@ -38,7 +36,7 @@ namespace core {
       bool handleBusy(std::string& line);
 
     public:
-      GCodeReader(UARTComponent* parent, GCodeSender* sender, GCodeQueue* analyzerQueue);
+      GCodeReader(GCodeSender* sender, GCodeQueue* analyzerQueue);
 
       void setup() override;
 

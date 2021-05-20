@@ -18,8 +18,6 @@ using namespace esphome;
 using namespace esphome::api;
 using namespace esphome::uart;
 
-#define get_sender(constructor) static_cast<GCodeSender *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
-
 namespace core {
   namespace communication {
     class GCodeSender : public Component, public CustomAPIDevice, public UARTDevice, public util::Threading {

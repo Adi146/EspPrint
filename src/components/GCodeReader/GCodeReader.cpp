@@ -1,9 +1,9 @@
-#include "gcode_reader.h"
+#include "GCodeReader.h"
 
 using namespace core::communication;
 
-GCodeReader::GCodeReader(UARTComponent* parent, GCodeSender* sender, GCodeQueue* analyzerQueue): 
-  UARTDevice(parent), 
+GCodeReader::GCodeReader(GCodeSender* sender, GCodeQueue* analyzerQueue): 
+  UARTDevice(), 
   m_sender(sender),
   m_analyzerQueue(analyzerQueue) {
 }
