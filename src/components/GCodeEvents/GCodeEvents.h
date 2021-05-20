@@ -1,11 +1,17 @@
 #pragma once
 
-#include "esphome.h"
+#include "esphome/core/component.h"
+#include "esphome/core/application.h"
+#include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/GCodeSender/GCodeSender.h"
 #include "gcode_analyzer.h"
 #include "ring_buffer.h"
 #include "ArduinoJson.h"
 
 #define EVENTS_BUFFER_SIZE 50
+
+using namespace esphome;
+using namespace esphome::api;
 
 namespace core {
   namespace analyzer {

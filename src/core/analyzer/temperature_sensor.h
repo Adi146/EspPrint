@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gcode_analyzer.h"
-#include "communication/gcode_sender.h"
+#include "esphome/components/GCodeSender/GCodeSender.h"
 #include <regex>
 
 using namespace esphome;

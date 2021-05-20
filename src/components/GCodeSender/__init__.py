@@ -14,19 +14,19 @@ communication_ns = cg.global_ns.namespace("core::communication")
 GCodeSenderComponent = communication_ns.class_("GCodeSender", cg.Component)
 
 CONFIG_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(CONF_ID): cv.declare_id(GCodeSenderComponent),
-        cv.GenerateID(CONF_GCODE_QUEUE): cv.use_id(GCodeQueueComponent),
-        cv.Optional(CONF_RESEND_BUFFER_SIZE): cv.positive_not_null_int,
-    }
+  {
+    cv.GenerateID(CONF_ID): cv.declare_id(GCodeSenderComponent),
+    cv.GenerateID(CONF_GCODE_QUEUE): cv.use_id(GCodeQueueComponent),
+    cv.Optional(CONF_RESEND_BUFFER_SIZE): cv.positive_not_null_int,
+  }
 ).extend(uart.UART_DEVICE_SCHEMA)
 
 def to_code(config):
-    queue = yield cg.get_variable(config[CONF_GCODE_QUEUE])
+  queue = yield cg.get_variable(config[CONF_GCODE_QUEUE])
 
-    var = cg.new_Pvariable(config[CONF_ID], queue)
-    yield cg.register_component(var, config)
-    yield uart.register_uart_device(var, config)
+  var = cg.new_Pvariable(config[CONF_ID], queue)
+  yield cg.register_component(var, config)
+  yield uart.register_uart_device(var, config)
 
-    if CONF_RESEND_BUFFER_SIZE in config:
-        cg.add(var.setResendBufferSize(config[CONF_RESEND_BUFFER_SIZE]))
+  if CONF_RESEND_BUFFER_SIZE in config:
+    cg.add(var.setResendBufferSize(config[CONF_RESEND_BUFFER_SIZE]))
