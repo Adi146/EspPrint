@@ -23,3 +23,4 @@ def to_code(config):
   yield cg.register_component(var, config)
 
   cg.add(queue.addSensor(var))
+  cg.add_library("ArduinoJson-esphomelib", "6.15.2")
