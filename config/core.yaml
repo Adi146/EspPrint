@@ -37,6 +37,12 @@ GCodeReader:
 # forwards sent and received GCodes to Home Assistant for terminal card
 GCodeEvents:
 
+sensor:
+- platform: M73_Progress
+  name: "${printer_name} Print Progress"
+- platform: M73_RemainingTime
+  name: "${printer_name} Remaining Time"
+
 #
 #climate:
 ## temperature control of hotends and heated bed

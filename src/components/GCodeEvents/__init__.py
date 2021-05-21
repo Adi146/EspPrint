@@ -7,14 +7,14 @@ DEPENDENCIES = ["GCodeQueue"]
 
 analyzer_ns = cg.global_ns.namespace("core::analyzer")
 
-GCodeEventsComponent = analyzer_ns.class_("GCodeEvents", cg.Component)
+GCodeEventsComponent = analyzer_ns.class_("GCodeEvents", cg.PollingComponent)
 
 CONFIG_SCHEMA = cv.Schema(
   {
     cv.GenerateID(CONF_ID): cv.declare_id(GCodeEventsComponent),
     cv.GenerateID(CONF_GCODE_QUEUE): cv.use_id(GCodeQueueComponent),
   }
-).extend(cv.COMPONENT_SCHEMA)
+).extend(cv.polling_component_schema("1s"))
 
 def to_code(config):
   queue = yield cg.get_variable(config[CONF_GCODE_QUEUE])
