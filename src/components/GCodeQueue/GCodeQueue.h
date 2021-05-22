@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/components/logger/logger.h"
 #include "gcode_analyzer.h"
 #include <queue>
 #include <mutex>

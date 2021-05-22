@@ -17,7 +17,7 @@ void GCodeQueue::handleLine(std::string& gcode, GCodeSource source) {
 void GCodeQueue::loop() {
   while(!m_queue.empty()) {
     auto entry = m_queue.front();
-    ESP_LOGI("queue", "%s: %s", entry.source == GCodeSource::READER ? "READ" : "SEND", entry.gcode.c_str());
+    ESP_LOGI("GCodeQueue", "%s: %s", entry.source == GCodeSource::READER ? "READ" : "SEND", entry.gcode.c_str());
     
     for (auto sensor: m_sensors) {      
       sensor->handleLine(entry.gcode, entry.source);
