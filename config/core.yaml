@@ -5,8 +5,6 @@ esphome:
   includes:
     - src/util/
     - src/core/analyzer/gcode_analyzer.h
-  libraries:
-    - ArduinoJson-esphomelib
   on_boot:
     # wait until printer is up and running
     - delay: 4s

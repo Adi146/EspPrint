@@ -1,7 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import sensor
-from esphome.components.GCodeQueue import CONF_GCODE_QUEUE, GCodeQueueComponent
+from esphome.components import sensor, M73_Base
 from esphome.const import (
   CONF_ID,
   DEVICE_CLASS_EMPTY,
@@ -9,27 +8,14 @@ from esphome.const import (
   UNIT_PERCENT,
 )
 
-DEPENDENCIES = ["GCodeQueue"]
+AUTO_LOAD = ["M73_Base"]
 
-analyzer_ns = cg.global_ns.namespace("core::analyzer")
+CONFIG_SCHEMA = M73_Base.BASE_SCHEMA
 
-M73_Progress = analyzer_ns.class_("M73_Progress", cg.Component, sensor.Sensor)
-
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = (
   sensor.sensor_schema(UNIT_PERCENT, ICON_PERCENT, 0, DEVICE_CLASS_EMPTY)
-  .extend(
-    {
-      cv.GenerateID(CONF_ID): cv.declare_id(M73_Progress),
-      cv.GenerateID(CONF_GCODE_QUEUE): cv.use_id(GCodeQueueComponent),
-    }
-  ).extend(cv.COMPONENT_SCHEMA)
+  .extend(M73_Base.BASE_SCHEMA)
 )
 
 def to_code(config):
-  queue = yield cg.get_variable(config[CONF_GCODE_QUEUE])
-
-  var = cg.new_Pvariable(config[CONF_ID])
-  yield cg.register_component(var, config)
-  yield sensor.register_sensor(var, config)
-
-  cg.add(queue.addSensor(var))
+  yield M73_Base.new_M73_sensor(config, 1)

@@ -10,12 +10,17 @@ using namespace esphome::sensor;
 
 namespace core {
   namespace analyzer {
-    class M73_Progress: public GCodeAnalyzer, public Component, public Sensor {
+    class M73_Sensor: public GCodeAnalyzer, public Component, public Sensor {
     private:
-      std::regex m_M73Rgx = std::regex(R"(M73 P(\d+) R\d+)");
+      std::regex m_M73Rgx = std::regex(R"(M73 P(\d+) R(\d+))");
+
+      int m_regexGroupIndex;
 
     public:
-      M73_Progress(): GCodeAnalyzer() {}
+      M73_Sensor(int regexGroupIndex):
+        GCodeAnalyzer(),
+        m_regexGroupIndex(regexGroupIndex) {
+      }
 
       void handleLine(std::string& gcode, GCodeSource source) override {
         if (source != GCodeSource::SENDER) {
@@ -24,7 +29,7 @@ namespace core {
 
         std::smatch match;
         if (std::regex_search(gcode, match, m_M73Rgx)) {
-          publish_state(atoi(match[1].str().c_str()));
+          publish_state(atoi(match[m_regexGroupIndex].str().c_str()));
         }
       }
     };
