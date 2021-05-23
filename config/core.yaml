@@ -4,7 +4,6 @@
 esphome:
   includes:
     - src/util/
-    - src/core/analyzer/gcode_analyzer.h
   on_boot:
     # wait until printer is up and running
     - delay: 4s
@@ -19,7 +18,6 @@ external_components:
       path: src/components
 
 GCodeQueue:
-  id: queue
 
 # core components for sending GCodes
 GCodeSender:
@@ -62,17 +60,3 @@ sensor:
 #      min_temperature: 0 °C
 #      max_temperature: 80 °C
 #      temperature_step: 1 °C
-#
-#sensor:
-## sensors for estimated print time and print progress.
-## these will update with M73 commands
-#- platform: custom
-#  lambda: |-
-#    auto progress = new core::analyzer::ProgressSensor();
-#    get_analyzerQueue(id(queue))->addSensor(progress);
-#    return {&progress->m_printProgress, &progress->m_remainingTime};
-#  sensors:
-#  - name: "${printer_name} Print Progress"
-#    unit_of_measurement: "%"
-#  - name: "${printer_name} Remaining Time"
-#    unit_of_measurement: "min"

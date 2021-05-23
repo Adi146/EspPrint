@@ -2,7 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
-#include "gcode_analyzer.h"
+#include "esphome/components/GCodeQueue/GCodeAnalyzer.h"
 #include <regex>
 
 using namespace esphome;

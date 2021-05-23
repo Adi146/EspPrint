@@ -4,7 +4,7 @@
 #include "esphome/core/application.h"
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/GCodeSender/GCodeSender.h"
-#include "gcode_analyzer.h"
+#include "esphome/components/GCodeQueue/GCodeAnalyzer.h"
 #include "ring_buffer.h"
 #include "ArduinoJson.h"
 
