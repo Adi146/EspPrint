@@ -1,22 +1,17 @@
 # sensor for HOST_ACTION_COMMANDS
 
-esphome:
-  includes:
-    - src/action
+#esphome:
+#  includes:
+#    - src/action
 
-custom_component:
-- id: prompt
-  lambda: |-
-    auto prompt = new action::PromptEvents("${printer_name}");
-    App.register_component(prompt);
-    get_analyzerQueue(id(queue))->addSensor(prompt);
-    return {prompt};
+PromptEvents:
+  printer_name: ${printer_name}
 
-text_sensor:
-- platform: custom
-  lambda: |-
-    auto notification = new action::NotificationSensor();
-    get_analyzerQueue(id(queue))->addSensor(notification);
-    return {notification};
-  text_sensors:
-  - name: "${printer_name} Notification"
+#text_sensor:
+#- platform: custom
+#  lambda: |-
+#    auto notification = new action::NotificationSensor();
+#    get_analyzerQueue(id(queue))->addSensor(notification);
+#    return {notification};
+#  text_sensors:
+#  - name: "${printer_name} Notification"

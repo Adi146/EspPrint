@@ -1,13 +1,12 @@
-#include "prompt_events.h"
+#include "PromptEvents.h"
 #include "ArduinoJson.h"
 
 using namespace action;
 
-PromptEvents::PromptEvents(std::string printerName) :
+PromptEvents::PromptEvents() :
   GCodeAnalyzer(),
   Component(),
-  CustomAPIDevice(),
-  m_printerName(printerName) {
+  CustomAPIDevice() {
 }
 
 void PromptEvents::handleLine(std::string& gcode, GCodeSource source) {
