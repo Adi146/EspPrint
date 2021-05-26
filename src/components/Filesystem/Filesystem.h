@@ -1,13 +1,13 @@
 #pragma once
 
-#include "esphome.h"
+#include "esphome/core/component.h"
 #include "FS.h"
 
 using namespace esphome;
 
 namespace storage {
-  namespace fs_adapter {
-    class FSAdapter: public Component {
+  namespace filesystem {
+    class Filesystem: public Component {
     public:
       virtual uint64_t getTotalSize() = 0;
       virtual uint64_t getUsedSize() = 0;
@@ -18,6 +18,6 @@ namespace storage {
     };
   }
 
-  extern fs_adapter::FSAdapter* fsAdapter;
+  extern filesystem::Filesystem* fsAdapter;
   extern fs::FS& fs;
 }

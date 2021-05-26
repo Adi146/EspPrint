@@ -1,12 +1,11 @@
 #pragma once
 
 #include "SD.h"
-#include "fs_adapter.h"
-
+#include "esphome/components/Filesystem/Filesystem.h"
 
 namespace storage {
-  namespace fs_adapter {
-    class SDAdapter: public FSAdapter {
+  namespace filesystem {
+    class SD_Filesystem: public Filesystem {
     public:
       void setup() override {
         SD.begin();
@@ -22,6 +21,6 @@ namespace storage {
     };
   }
 
-  fs_adapter::FSAdapter* fsAdapter = new fs_adapter::SDAdapter();
+  filesystem::Filesystem* fsAdapter = new filesystem::SD_Filesystem();
   fs::FS& fs = SD;
 }

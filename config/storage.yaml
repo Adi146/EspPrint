@@ -1,61 +1,63 @@
 # components for file storage. You can print GCodes files with this package.
 
-substitutions:
-  # Filesystem of the Storage, currently tested filesystems are SD_MMC and SD for SPI card readers
-  fs: SD
-  # this GCode will be executed when the print get canceled
-  cancle_gcode: '{"M104 S0", "M140 S0", "G28 X Y", "M84"}'
+SD_MMC:
 
-esphome:
-  includes:
-    - src/storage/file_reader.h
-    - src/storage/file_reader.cpp
-    - src/storage/upload_server.h
-    - src/storage/upload_server.cpp
-    - src/storage/file_sensor.h
-    - src/storage/analyzer/file_analyzer.cpp
-    - src/storage/analyzer/file_analyzer.h
-    - src/storage/fs_adapter/fs_adapter.h
-    - src/storage/fs_adapter/${fs}_adapter.h
-  libraries:
-    - ArduinoJson-esphomelib        
-
-web_server_base:
-  id: upload_server_base
-
-custom_component:
-- id: fs_adapter
-  lambda: |-
-    auto fsAdapter = storage::fsAdapter;
-    App.register_component(fsAdapter);
-    return {fsAdapter};
-# component to print GCode from storage
-- id: file_reader
-  lambda: |-
-    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${cancle_gcode});
-    App.register_component(file_reader);
-    return {file_reader};
-# http server for GCode upload
-# this component fakes parts of the octoprint Rest API for compatiblity with slicers
-- id: upload_server
-  lambda: |-
-    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_fileanalyzer(id(analyzer)));
-    App.register_component(upload);
-    return {upload};
-# component to enable filesystem card
-- id: analyzer
-  lambda: |-
-    auto analyzer = new storage::analyzer::Fileanalyzer();
-    App.register_component(analyzer);
-    return {analyzer};
-
-text_sensor:
-# displays the file which is currently printing
-- platform: custom
-  lambda: |-
-    auto file_sensor = new storage::FileSensor(get_fileReader(id(file_reader)));
-    App.register_component(file_sensor);
-    return {file_sensor};
-  text_sensors:
-  - name: "${printer_name} Current File"
+#substitutions:
+#  # Filesystem of the Storage, currently tested filesystems are SD_MMC and SD for SPI card readers
+#  fs: SD
+#  # this GCode will be executed when the print get canceled
+#  cancle_gcode: '{"M104 S0", "M140 S0", "G28 X Y", "M84"}'
+#
+#esphome:
+#  includes:
+#    - src/storage/file_reader.h
+#    - src/storage/file_reader.cpp
+#    - src/storage/upload_server.h
+#    - src/storage/upload_server.cpp
+#    - src/storage/file_sensor.h
+#    - src/storage/analyzer/file_analyzer.cpp
+#    - src/storage/analyzer/file_analyzer.h
+#    - src/storage/fs_adapter/fs_adapter.h
+#    - src/storage/fs_adapter/${fs}_adapter.h
+#  libraries:
+#    - ArduinoJson-esphomelib        
+#
+#web_server_base:
+#  id: upload_server_base
+#
+#custom_component:
+#- id: fs_adapter
+#  lambda: |-
+#    auto fsAdapter = storage::fsAdapter;
+#    App.register_component(fsAdapter);
+#    return {fsAdapter};
+## component to print GCode from storage
+#- id: file_reader
+#  lambda: |-
+#    auto file_reader = new storage::FileReader(get_sender(id(gcode_sender)), ${cancle_gcode});
+#    App.register_component(file_reader);
+#    return {file_reader};
+## http server for GCode upload
+## this component fakes parts of the octoprint Rest API for compatiblity with slicers
+#- id: upload_server
+#  lambda: |-
+#    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_fileanalyzer(id(analyzer)));
+#    App.register_component(upload);
+#    return {upload};
+## component to enable filesystem card
+#- id: analyzer
+#  lambda: |-
+#    auto analyzer = new storage::analyzer::Fileanalyzer();
+#    App.register_component(analyzer);
+#    return {analyzer};
+#
+#text_sensor:
+## displays the file which is currently printing
+#- platform: custom
+#  lambda: |-
+#    auto file_sensor = new storage::FileSensor(get_fileReader(id(file_reader)));
+#    App.register_component(file_sensor);
+#    return {file_sensor};
+#  text_sensors:
+#  - name: "${printer_name} Current File"
 

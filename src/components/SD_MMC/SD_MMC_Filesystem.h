@@ -1,12 +1,12 @@
 #pragma once
 
 #include "SD_MMC.h"
-#include "fs_adapter.h"
+#include "esphome/components/Filesystem/Filesystem.h"
 
 
 namespace storage {
-  namespace fs_adapter {
-    class SD_MMCAdapter: public FSAdapter {
+  namespace filesystem {
+    class SD_MMC_Filesystem: public Filesystem {
     public:
       void setup() override {
         SD_MMC.begin();
@@ -22,6 +22,6 @@ namespace storage {
     };
   }
 
-  fs_adapter::FSAdapter* fsAdapter = new fs_adapter::SD_MMCAdapter();
+  filesystem::Filesystem* fsAdapter = new filesystem::SD_MMC_Filesystem();
   fs::FS& fs = SD_MMC;
 }
