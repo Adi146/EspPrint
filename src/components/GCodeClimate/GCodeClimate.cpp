@@ -1,10 +1,12 @@
-#include "temperature_sensor.h"
+#include "GCodeClimate.h"
 
 using namespace core::analyzer;
 
-GCodeClimate::GCodeClimate(GCodeSender* sender): 
-Climate(),
-m_sender(sender) {
+GCodeClimate::GCodeClimate(GCodeSender* sender, ClimateToken token, int index): 
+  Climate(),
+  m_token(token),
+  m_index(index),
+  m_sender(sender){
 }
 
 void GCodeClimate::control(const ClimateCall& call) {
@@ -23,13 +25,13 @@ void GCodeClimate::control(const ClimateCall& call) {
   char buffer[MAX_GCODE_LENGTH] = "";
 
   switch (m_token){
-    case 'T':
+    case ClimateToken::TOOL:
       snprintf(buffer, sizeof(buffer), "M104 T%d S%d", m_index, val);
       break;   
-    case 'B':
+    case ClimateToken::BED:
       snprintf(buffer, sizeof(buffer), "M140 S%d", val);
       break;
-    case 'C':
+    case ClimateToken::CHAMBER:
       snprintf(buffer, sizeof(buffer), "M141 S%d", val);
       break;   
     default:
@@ -46,12 +48,9 @@ ClimateTraits GCodeClimate::traits() {
   return traits;
 }
 
-void GCodeClimate::update(float currentTemp, float targetTemp, char token, int index) {
+void GCodeClimate::update(float currentTemp, float targetTemp) {
   current_temperature = currentTemp;
   target_temperature = targetTemp;
-
-  m_token = token;
-  m_index = index;
 
   if (target_temperature == 0) {
     mode = CLIMATE_MODE_OFF;
@@ -63,15 +62,7 @@ void GCodeClimate::update(float currentTemp, float targetTemp, char token, int i
   publish_state();
 }
 
-TemperatureSensor::TemperatureSensor(int numTemperatures, GCodeSender* sender) :
-GCodeAnalyzer() {
-  m_temperatures.reserve(numTemperatures);
-  for(int i = 0; i < numTemperatures; i++) {
-    m_temperatures.push_back(new GCodeClimate(sender));
-  }
-}
-
-void TemperatureSensor::handleLine(std::string& gcode, GCodeSource source) {
+void GCodeClimate::handleLine(std::string& gcode, GCodeSource source) {
   if (source != GCodeSource::READER) {
     return;
   }
@@ -81,13 +72,14 @@ void TemperatureSensor::handleLine(std::string& gcode, GCodeSource source) {
 
   for (auto i = begin; i != end; i++) {
     std::smatch match = *i;
-    int tempIndex = std::distance(begin, i);
     char token = match[1].str().c_str()[0];
-    int toolIndex = atoi(match[2].str().c_str());
+    int index = atoi(match[2].str().c_str());
 
-    float currentTemp = parse_float(match[3].str()).value_or(0.0f);
-    float targetTemp = parse_float(match[5].str()).value_or(0.0f);
+    if(m_token == token && m_index == index) {
+      float currentTemp = parse_float(match[3].str()).value_or(0.0f);
+      float targetTemp = parse_float(match[5].str()).value_or(0.0f);
 
-    m_temperatures[tempIndex]->update(currentTemp, targetTemp, token, toolIndex);
+      update(currentTemp, targetTemp);
+    }
   }
 }

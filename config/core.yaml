@@ -39,24 +39,20 @@ sensor:
 - platform: M73_RemainingTime
   name: "${printer_name} Remaining Time"
 
-#
-#climate:
-## temperature control of hotends and heated bed
-#- platform: custom
-#  lambda: |-
-#    auto temperature = new core::analyzer::TemperatureSensor(2, get_sender(id(gcode_sender)));
-#    get_analyzerQueue(id(queue))->addSensor(temperature);
-#    return temperature->getClimates();
-#  climates:
-#  - name: "${printer_name} Tool Temperature"
-#    id: tool_temp
-#    visual:
-#      min_temperature: 0 °C
-#      max_temperature: 250 °C
-#      temperature_step: 1 °C
-#  - name: "${printer_name} Bed Temperature"
-#    id: bed_temp
-#    visual:
-#      min_temperature: 0 °C
-#      max_temperature: 80 °C
-#      temperature_step: 1 °C
+climate:
+- platform: GCodeClimate
+  id: tool_temp
+  name: "${printer_name} Tool Temperature"
+  heater_element: tool
+  visual:
+    min_temperature: 0 °C
+    max_temperature: 250 °C
+    temperature_step: 1 °C
+- platform: GCodeClimate
+  id: bed_temp
+  name: "${printer_name} Bed Temperature"
+  heater_element: bed
+  visual:
+    min_temperature: 0 °C
+    max_temperature: 80 °C
+    temperature_step: 1 °C
