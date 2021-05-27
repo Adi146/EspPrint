@@ -5,7 +5,7 @@
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/GCodeQueue/GCodeQueue.h"
 #include "esphome/components/GCodeSender/GCodeSender.h"
-#include "threading.h"
+#include "esphome/components/Util/Threading.h"
 #include <regex>
 #include <string>
 

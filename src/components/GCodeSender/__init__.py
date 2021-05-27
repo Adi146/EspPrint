@@ -3,15 +3,15 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID
 from esphome.components import uart
 from esphome.components.GCodeQueue import CONF_GCODE_QUEUE, GCodeQueueComponent
+from esphome.components.Util import COMMUNICATION_NS
 
 DEPENDENCIES = ["uart", "GCodeQueue"]
+AUTO_LOAD = ["Util"]
 
 CONF_GCODE_SENDER = "gcode_sender"
 CONF_RESEND_BUFFER_SIZE = "resend_buffer_size"
 
-communication_ns = cg.global_ns.namespace("core::communication")
-
-GCodeSenderComponent = communication_ns.class_("GCodeSender", cg.Component)
+GCodeSenderComponent = COMMUNICATION_NS.class_("GCodeSender", cg.Component)
 
 CONFIG_SCHEMA = cv.Schema(
   {

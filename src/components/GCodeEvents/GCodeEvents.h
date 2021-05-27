@@ -5,7 +5,7 @@
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/GCodeSender/GCodeSender.h"
 #include "esphome/components/GCodeQueue/GCodeAnalyzer.h"
-#include "ring_buffer.h"
+#include "esphome/components/Util/RingBuffer.h"
 #include "ArduinoJson.h"
 
 #define EVENTS_BUFFER_SIZE 50

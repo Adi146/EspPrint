@@ -2,8 +2,6 @@
 # other packages may depend on components of this package.
 
 esphome:
-  includes:
-    - src/util/
   on_boot:
     # wait until printer is up and running
     - delay: 4s

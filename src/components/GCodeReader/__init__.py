@@ -4,12 +4,12 @@ from esphome.const import CONF_ID
 from esphome.components import uart
 from esphome.components.GCodeQueue import CONF_GCODE_QUEUE, GCodeQueueComponent
 from esphome.components.GCodeSender import CONF_GCODE_SENDER, GCodeSenderComponent
+from esphome.components.Util import COMMUNICATION_NS
 
 DEPENDENCIES = ["uart", "GCodeSender", "GCodeQueue"]
+AUTO_LOAD = ["Util"]
 
-communication_ns = cg.global_ns.namespace("core::communication")
-
-GCodeReaderComponent = communication_ns.class_("GCodeReader", cg.Component)
+GCodeReaderComponent = COMMUNICATION_NS.class_("GCodeReader", cg.Component)
 
 CONFIG_SCHEMA = cv.Schema(
   {

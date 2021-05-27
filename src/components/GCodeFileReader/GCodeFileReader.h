@@ -4,7 +4,7 @@
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/GCodeSender/GCodeSender.h"
 #include "esphome/components/Filesystem/Filesystem.h"
-#include "threading.h"
+#include "esphome/components/Util/Threading.h"
 
 using namespace esphome;
 using namespace esphome::api;

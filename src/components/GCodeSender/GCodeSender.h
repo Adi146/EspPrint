@@ -5,7 +5,7 @@
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/GCodeQueue/GCodeQueue.h"
-#include "threading.h"
+#include "esphome/components/Util/Threading.h"
 #include <string>
 #include <deque>
 

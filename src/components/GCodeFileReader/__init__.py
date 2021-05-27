@@ -6,6 +6,7 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["GCodeSender"]
+AUTO_LOAD = ["Util"]
 
 storage_ns = cg.global_ns.namespace("storage")
 GCodeReaderComponent = storage_ns.class_("GCodeFileReader", cg.Component)
