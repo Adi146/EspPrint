@@ -1,15 +1,15 @@
-#include "file_reader.h"
+#include "GCodeFileReader.h"
 
 using namespace storage;
 
-FileReader::FileReader(GCodeSender* sender, std::vector<std::string> cancelGCodes) :
+GCodeFileReader::GCodeFileReader(GCodeSender* sender, std::vector<std::string> cancelGCodes) :
   Component(),
   CustomAPIDevice(),
   m_sender(sender),
   m_cancelGCodes(cancelGCodes) {
 }
 
-void FileReader::readNextGCode(std::string& gcode) {
+void GCodeFileReader::readNextGCode(std::string& gcode) {
   char buffer[MAX_GCODE_LENGTH] = "";
   for (int i = 0; i < sizeof(buffer) && m_file.available(); i++) {
     char c = m_file.read();
@@ -31,14 +31,14 @@ void FileReader::readNextGCode(std::string& gcode) {
   gcode = std::string(buffer);
 }
 
-void FileReader::setup() {
-  register_service(&FileReader::print, "print_file", {"file"});
-  register_service(&FileReader::stop, "cancle_print");
+void GCodeFileReader::setup() {
+  register_service(&GCodeFileReader::print, "print_file", {"file"});
+  register_service(&GCodeFileReader::stop, "cancle_print");
 
   Threading::setup(4 * 1024, 1, 1);
 }
 
-void FileReader::threadLoop() {
+void GCodeFileReader::threadLoop() {
   while (m_file.available() && m_tmpGCode.empty()) {
     readNextGCode(m_tmpGCode);
   }
@@ -48,7 +48,7 @@ void FileReader::threadLoop() {
   }
 }
 
-void FileReader::print(std::string filename) {
+void GCodeFileReader::print(std::string filename) {
   if (m_file.available()) {
     ESP_LOGW("file", "Already printing, ignored");
     return;
@@ -65,7 +65,7 @@ void FileReader::print(std::string filename) {
   m_sender->reset();
 }
 
-void FileReader::stop() {
+void GCodeFileReader::stop() {
   m_file.close();
   m_tmpGCode = "";
 

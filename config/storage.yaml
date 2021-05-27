@@ -1,6 +1,11 @@
 # components for file storage. You can print GCodes files with this package.
 
+# Filesystem of the Storage, currently tested filesystems are SD_MMC and SD for SPI card readers
 SD_MMC:
+
+# component to print GCode from storage
+GCodeFileReader:
+  cancel_gcodes: ["M104 S0", "M140 S0", "G28 X Y", "M84"]
 
 #substitutions:
 #  # Filesystem of the Storage, currently tested filesystems are SD_MMC and SD for SPI card readers

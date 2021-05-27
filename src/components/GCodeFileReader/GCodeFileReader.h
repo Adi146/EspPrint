@@ -1,18 +1,17 @@
 #pragma once
 
-#include "communication/gcode_sender.h"
-#include "fs_adapter.h"
+#include "esphome/core/component.h"
+#include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/GCodeSender/GCodeSender.h"
+#include "esphome/components/Filesystem/Filesystem.h"
 #include "threading.h"
 
 using namespace esphome;
-using namespace esphome::custom_component;
 using namespace esphome::api;
 using namespace core::communication;
 
-#define get_fileReader(constructor) static_cast<storage::FileReader *>(const_cast<CustomComponentConstructor *>(&constructor)->get_component(0))
-
 namespace storage {
-  class FileReader: public Component, public CustomAPIDevice, public util::Threading {
+  class GCodeFileReader: public Component, public CustomAPIDevice, public util::Threading {
   private:
     GCodeSender* m_sender;
 
@@ -24,7 +23,7 @@ namespace storage {
     void readNextGCode(std::string& gcode);
 
   public:
-    FileReader(GCodeSender* sender, std::vector<std::string> cancelGCodes);
+    GCodeFileReader(GCodeSender* sender, std::vector<std::string> cancelGCodes);
 
     void setup() override;
 
