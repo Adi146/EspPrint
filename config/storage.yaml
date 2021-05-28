@@ -10,7 +10,7 @@ GCodeFileReader:
 
 # displays the file which is currently printing
 text_sensor:
-  platform: template
+- platform: template
   name: "${printer_name} Current File"
   lambda: |-
     if (id(gcode_file_reader)->getFilename() == "")
