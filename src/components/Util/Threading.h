@@ -16,6 +16,10 @@ namespace util {
 
     int m_delayMs = 1;
 
+    uint32_t getStackWaterMark() {
+      return uxTaskGetStackHighWaterMark(m_thread);
+    }
+
   private:
     TaskHandle_t m_thread;
 

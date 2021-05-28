@@ -52,29 +52,26 @@ sensor:
   unit_of_measurement: number
   accuracy_decimals: 0
 
-## displays the remaining stack size per of threads which has never been used
-## there should be a reasonable buffer for the stack size
-#- platform: custom
-#  lambda: |-
-#    auto senderStack = new debug::StackSensor(get_sender(id(gcode_sender)));
-#    App.register_component(senderStack);
-#    return {senderStack};
-#  sensors:
-#  - name: "${printer_name} Sender Thread Stack Watermark"
-#    unit_of_measurement: "bytes"
-#- platform: custom
-#  lambda: |-
-#    auto readerStack = new debug::StackSensor(get_reader(id(gcode_reader)));
-#    App.register_component(readerStack);
-#    return {readerStack};
-#  sensors:
-#  - name: "${printer_name} Reader Thread Stack Watermark"
-#    unit_of_measurement: "bytes"
-#- platform: custom
-#  lambda: |-
-#    auto fileStack = new debug::StackSensor(get_fileReader(id(file_reader)));
-#    App.register_component(fileStack);
-#    return {fileStack};
-#  sensors:
-#  - name: "${printer_name} File Reader Thread Stack Watermark"
-#    unit_of_measurement: "bytes"
+# displays the remaining stack size per of threads which has never been used
+# there should be a reasonable buffer for the stack size
+- platform: template
+  name: "${printer_name} Sender Thread Stack Watermark"
+  lambda: |-
+    return id(gcode_sender)->getStackWaterMark();
+  update_interval: 1s
+  unit_of_measurement: bytes
+  accuracy_decimals: 0
+- platform: template
+  name: "${printer_name} Reader Thread Stack Watermark"
+  lambda: |-
+    return id(gcode_reader)->getStackWaterMark();
+  update_interval: 1s
+  unit_of_measurement: bytes
+  accuracy_decimals: 0
+- platform: template
+  name: "${printer_name} File Reader Thread Stack Watermark"
+  lambda: |-
+    return id(gcode_file_reader)->getStackWaterMark();
+  update_interval: 1s
+  unit_of_measurement: bytes
+  accuracy_decimals: 0
