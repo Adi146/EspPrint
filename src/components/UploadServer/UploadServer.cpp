@@ -1,8 +1,8 @@
-#include "upload_server.h"
+#include "UploadServer.h"
 
 using namespace storage;
 
-UploadServer::UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, analyzer::Fileanalyzer* fileanalyzer):  
+UploadServer::UploadServer(web_server_base::WebServerBase* base, GCodeFileReader* fileReader, FileAnalyzer* fileanalyzer):  
   m_base(base), 
   m_fileReader(fileReader),
   m_fileanalyzer(fileanalyzer) {

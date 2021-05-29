@@ -9,14 +9,15 @@ DEPENDENCIES = ["GCodeSender"]
 AUTO_LOAD = ["Util"]
 
 storage_ns = cg.global_ns.namespace("storage")
-GCodeReaderComponent = storage_ns.class_("GCodeFileReader", cg.Component)
+GCodeFileReaderComponent = storage_ns.class_("GCodeFileReader", cg.Component)
 
 CONF_CANCEL_GCODES = "cancel_gcodes"
+CONF_GCODE_FILE_READER_ID = "gcode_file_reader_id"
 
 CONFIG_SCHEMA = (
   cv.Schema(
     {
-      cv.GenerateID(CONF_ID): cv.declare_id(GCodeReaderComponent),
+      cv.GenerateID(CONF_ID): cv.declare_id(GCodeFileReaderComponent),
       cv.GenerateID(GCodeSender.CONF_GCODE_SENDER): cv.use_id(GCodeSender.GCodeSenderComponent),
       cv.Required(CONF_CANCEL_GCODES): cv.All([str], cv.Length(min=1)),
     }

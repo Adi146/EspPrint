@@ -1,9 +1,9 @@
 #pragma once
 
-#include "esphome.h"
-#include "fs_adapter.h"
-#include "file_reader.h"
-#include "file_analyzer.h"
+#include "esphome/core/component.h"
+#include "esphome/components/web_server_base/web_server_base.h"
+#include "esphome/components/FileAnalyzer/FileAnalyzer.h"
+#include "esphome/components/GCodeFileReader/GCodeFileReader.h"
 
 using namespace esphome;
 
@@ -11,11 +11,11 @@ namespace storage {
   class UploadServer: public Component, public AsyncWebHandler {
   protected:
     web_server_base::WebServerBase* m_base;
-    FileReader* m_fileReader;
-    analyzer::Fileanalyzer* m_fileanalyzer;
+    GCodeFileReader* m_fileReader;
+    FileAnalyzer* m_fileanalyzer;
 
   public:
-    UploadServer(web_server_base::WebServerBase* base, FileReader* fileReader, analyzer::Fileanalyzer* fileanalyzer);
+    UploadServer(web_server_base::WebServerBase* base, GCodeFileReader* fileReader, FileAnalyzer* fileanalyzer);
 
     void setup() override;
 

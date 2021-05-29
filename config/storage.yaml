@@ -22,13 +22,6 @@ text_sensor:
 # component to enable filesystem card
 FileAnalyzer:
 
-#web_server_base:
-#  id: upload_server_base
-#
-## http server for GCode upload
-## this component fakes parts of the octoprint Rest API for compatiblity with slicers
-#- id: upload_server
-#  lambda: |-
-#    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_fileanalyzer(id(analyzer)));
-#    App.register_component(upload);
-#    return {upload};
+# http server for GCode upload
+# this component fakes parts of the octoprint Rest API for compatiblity with slicers
+UploadServer:

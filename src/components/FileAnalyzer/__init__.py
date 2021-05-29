@@ -7,6 +7,8 @@ from esphome.const import (
 storage_ns = cg.global_ns.namespace("storage")
 FileAnalyzerComponent = storage_ns.class_("FileAnalyzer", cg.Component)
 
+CONF_FILE_ANALYZER_ID = "file_analyzer_id"
+
 CONFIG_SCHEMA = (
   cv.Schema(
     {
