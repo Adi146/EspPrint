@@ -1,6 +1,6 @@
-#include "file_analyzer.h"
+#include "FileAnalyzer.h"
 
-using namespace storage::analyzer;
+using namespace storage;
 
 void Fileinfo::fillJsonObject(JsonObject& obj) {
   obj["path"] = path;
@@ -8,12 +8,12 @@ void Fileinfo::fillJsonObject(JsonObject& obj) {
   obj["lastWrite"] = lastWrite;
 }
 
-Fileanalyzer::Fileanalyzer():
+FileAnalyzer::FileAnalyzer():
   Component(),
   CustomAPIDevice(){
 }
 
-Fileinfo Fileanalyzer::analyze(fs::File& file) {
+Fileinfo FileAnalyzer::analyze(fs::File& file) {
   Fileinfo info;
   info.path = file.name();
   info.size = file.size();
@@ -22,14 +22,14 @@ Fileinfo Fileanalyzer::analyze(fs::File& file) {
   return info;
 }
 
-void Fileanalyzer::setup() {
-  register_service(&Fileanalyzer::fireListEvent, "list_files");
-  register_service(&Fileanalyzer::deleteFile, "delete_file", {"file"});
+void FileAnalyzer::setup() {
+  register_service(&FileAnalyzer::fireListEvent, "list_files");
+  register_service(&FileAnalyzer::deleteFile, "delete_file", {"file"});
 
   addFile("/");
 }
 
-void Fileanalyzer::fireListEvent() {
+void FileAnalyzer::fireListEvent() {
   DynamicJsonDocument doc(160 + 96 * m_files.size());
 
   for (auto i = 0; i < m_files.size(); i++) {
@@ -48,7 +48,7 @@ void Fileanalyzer::fireListEvent() {
   });
 }
 
-void Fileanalyzer::addFile(fs::File& file) {
+void FileAnalyzer::addFile(fs::File& file) {
   if(file) {
     if (file.isDirectory()) {
       while(true) {
@@ -67,7 +67,7 @@ void Fileanalyzer::addFile(fs::File& file) {
   }
 }
 
-void Fileanalyzer::addFile(std::string path) {
+void FileAnalyzer::addFile(std::string path) {
   auto file = fs.open(path.c_str(), FILE_READ);
   if (file) {
     addFile(file);
@@ -75,7 +75,7 @@ void Fileanalyzer::addFile(std::string path) {
   file.close();
 }
 
-void Fileanalyzer::deleteFile(std::string path) {
+void FileAnalyzer::deleteFile(std::string path) {
   if(fs.remove(path.c_str())) {
     removeFromList(path);
   }
@@ -83,7 +83,7 @@ void Fileanalyzer::deleteFile(std::string path) {
   fireListEvent();
 }
 
-void Fileanalyzer::removeFromList(std::string path) {
+void FileAnalyzer::removeFromList(std::string path) {
   for (auto it = m_files.begin(); it != m_files.end();) {
     if(it->path == path) {
       it = m_files.erase(it);

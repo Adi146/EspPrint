@@ -1,7 +1,7 @@
 # components for file storage. You can print GCodes files with this package.
 
 # Filesystem of the Storage, currently tested filesystems are SD_MMC and SD for SPI card readers
-SD_MMC:
+SD:
 
 # component to print GCode from storage
 GCodeFileReader:
@@ -19,6 +19,9 @@ text_sensor:
       return id(gcode_file_reader)->getFilename();
   update_interval: 10s
 
+# component to enable filesystem card
+FileAnalyzer:
+
 #web_server_base:
 #  id: upload_server_base
 #
@@ -29,10 +32,3 @@ text_sensor:
 #    auto upload = new storage::UploadServer(id(upload_server_base), get_fileReader(id(file_reader)), get_fileanalyzer(id(analyzer)));
 #    App.register_component(upload);
 #    return {upload};
-## component to enable filesystem card
-#- id: analyzer
-#  lambda: |-
-#    auto analyzer = new storage::analyzer::Fileanalyzer();
-#    App.register_component(analyzer);
-#    return {analyzer};
-
