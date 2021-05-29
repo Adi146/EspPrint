@@ -2,83 +2,76 @@
 # if your ESPPrint setup is stable feel free to disable this package
 # a troubleshooting guide will follow soon
 
-esphome:
-  includes:
-    - src/debug/
-
 sensor:
 # uptime sensor of the ESP to detect crashes
 - platform: uptime
   name: "${printer_name} ESP Uptime"
+
 # displays free memory of the ESP
-- platform: custom
+- platform: template
+  name: "${printer_name} ESP Free Memory"
   lambda: |-
-    auto memory = new debug::MemorySensor();
-    App.register_component(memory);
-    return {memory};
-  sensors:
-  - name: "${printer_name} ESP Free Memory"
-    unit_of_measurement: "bytes"
+    return ESP.getFreeHeap();
+  update_interval: 10s
+  unit_of_measurement: bytes
+  accuracy_decimals: 0
+
 # number of resends per print job
 # don't worry about a few resends but a high number indicates a unstable connection to the printer
-- platform: custom
+- platform: template
+  name: "${printer_name} Print Resends"
   lambda: |-
-    auto resend = new debug::ResendSensor(get_sender(id(gcode_sender)));
-    App.register_component(resend);
-    return {resend};
-  sensors:
-  - name: "${printer_name} Print Resends"
-    unit_of_measurement: "number"
+    return id(gcode_sender)->getResendCounter();
+  update_interval: 5s
+  unit_of_measurement: number
+  accuracy_decimals: 0
+
 # timeouts occur when ESPPrint doesn't receive a answer form the printer
 # this should never happen. Timeouts are a indication for unstable connection to the printer and may result in blobs on your print
-- platform: custom
+- platform: template
+  name: "${printer_name} Print Timeouts"
   lambda: |-
-    auto timeouts = new debug::TimeoutSensor(get_sender(id(gcode_sender)));
-    App.register_component(timeouts);
-    return {timeouts};
-  sensors:
-  - name: "${printer_name} Print Timeouts"
-    unit_of_measurement: "number"
+    return id(gcode_sender)->getTimeoutCounter();
+  update_interval: 5s
+  unit_of_measurement: number
+  accuracy_decimals: 0
+
 # current free slots in the printers planner and gcode buffer. ADVANCED_OK is necessary
-- platform: custom
+- platform: template
+  name: "${printer_name} Printer Planner Buffer"
   lambda: |-
-    auto planner = new debug::PlannerBufferSensor(get_sender(id(gcode_sender)));
-    App.register_component(planner);
-    return {planner};
-  sensors:
-  - name: "${printer_name} Printer Planner Buffer"
-    unit_of_measurement: "number"
-- platform: custom
+    return id(gcode_sender)->getFreePlannerBuffer();
+  update_interval: 0ms
+  unit_of_measurement: number
+  accuracy_decimals: 0
+- platform: template
+  name: "${printer_name} Printer GCode Buffer"
   lambda: |-
-    auto gcode = new debug::GCodeBufferSensor(get_sender(id(gcode_sender)));
-    App.register_component(gcode);
-    return {gcode};
-  sensors:
-  - name: "${printer_name} Printer GCode Buffer"
-    unit_of_measurement: "number"
+    return id(gcode_sender)->getFreeGCodeBuffer();
+  update_interval: 0ms
+  unit_of_measurement: number
+  accuracy_decimals: 0
+
 # displays the remaining stack size per of threads which has never been used
 # there should be a reasonable buffer for the stack size
-- platform: custom
+- platform: template
+  name: "${printer_name} Sender Thread Stack Watermark"
   lambda: |-
-    auto senderStack = new debug::StackSensor(get_sender(id(gcode_sender)));
-    App.register_component(senderStack);
-    return {senderStack};
-  sensors:
-  - name: "${printer_name} Sender Thread Stack Watermark"
-    unit_of_measurement: "bytes"
-- platform: custom
+    return id(gcode_sender)->getStackWaterMark();
+  update_interval: 1s
+  unit_of_measurement: bytes
+  accuracy_decimals: 0
+- platform: template
+  name: "${printer_name} Reader Thread Stack Watermark"
   lambda: |-
-    auto readerStack = new debug::StackSensor(get_reader(id(gcode_reader)));
-    App.register_component(readerStack);
-    return {readerStack};
-  sensors:
-  - name: "${printer_name} Reader Thread Stack Watermark"
-    unit_of_measurement: "bytes"
-- platform: custom
+    return id(gcode_reader)->getStackWaterMark();
+  update_interval: 1s
+  unit_of_measurement: bytes
+  accuracy_decimals: 0
+- platform: template
+  name: "${printer_name} File Reader Thread Stack Watermark"
   lambda: |-
-    auto fileStack = new debug::StackSensor(get_fileReader(id(file_reader)));
-    App.register_component(fileStack);
-    return {fileStack};
-  sensors:
-  - name: "${printer_name} File Reader Thread Stack Watermark"
-    unit_of_measurement: "bytes"
+    return id(gcode_file_reader)->getStackWaterMark();
+  update_interval: 1s
+  unit_of_measurement: bytes
+  accuracy_decimals: 0

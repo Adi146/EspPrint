@@ -36,5 +36,6 @@
 secrets.yaml
 .esphome
 espprint_*/
+__pycache__
 
 *.log

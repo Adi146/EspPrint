@@ -2,76 +2,55 @@
 # other packages may depend on components of this package.
 
 esphome:
-  includes:
-    - src/core/
-    - src/util/
-  libraries:
-    - ArduinoJson-esphomelib
   on_boot:
     # wait until printer is up and running
     - delay: 4s
     # initialize gcode sender module
-    - lambda: get_sender(id(gcode_sender))->reset();
+    - lambda: id(gcode_sender)->reset();
     # enable auto temperature report
-    - lambda: get_sender(id(gcode_sender))->sendGCode("M155 S4");
+    - lambda: id(gcode_sender)->sendGCode("M155 S4");
 
-custom_component:
+external_components:
+  - source:
+      type: local
+      path: src/components
+
+GCodeQueue:
+
 # core components for sending GCodes
-- id: gcode_sender
-  lambda: |-
-    auto sender = new core::communication::GCodeSender(id(uart_bus), 1, get_analyzerQueue(id(queue)));
-    App.register_component(sender);
-    return {sender};
-# core component for receiving GCode responses
-- id: gcode_reader
-  lambda: |-
-    auto reader = new core::communication::GCodeReader(id(uart_bus), get_sender(id(gcode_sender)), get_analyzerQueue(id(queue)));
-    App.register_component(reader);
-    return {reader};
-- id: queue
-  lambda: |-
-    auto queue = new core::analyzer::GCodeQueue();
-    App.register_component(queue);
-    return {queue};
-# forwards sent and received GCodes to Home Assistant for terminal card
-- id: events
-  lambda: |-
-    auto events = new core::analyzer::GCodeEvents();
-    App.register_component(events);
-    get_analyzerQueue(id(queue))->addSensor(events);
-    return {events};
+GCodeSender:
+  id: gcode_sender
+  uart_id: uart_bus
+  resend_buffer_size: 8
 
-climate:
-# temperature control of hotends and heated bed
-- platform: custom
-  lambda: |-
-    auto temperature = new core::analyzer::TemperatureSensor(2, get_sender(id(gcode_sender)));
-    get_analyzerQueue(id(queue))->addSensor(temperature);
-    return temperature->getClimates();
-  climates:
-  - name: "${printer_name} Tool Temperature"
-    id: tool_temp
-    visual:
-      min_temperature: 0 °C
-      max_temperature: 250 °C
-      temperature_step: 1 °C
-  - name: "${printer_name} Bed Temperature"
-    id: bed_temp
-    visual:
-      min_temperature: 0 °C
-      max_temperature: 80 °C
-      temperature_step: 1 °C
+# core component for receiving GCode responses
+GCodeReader:
+  id: gcode_reader
+  uart_id: uart_bus
+
+# forwards sent and received GCodes to Home Assistant for terminal card
+GCodeEvents:
 
 sensor:
-# sensors for estimated print time and print progress.
-# these will update with M73 commands
-- platform: custom
-  lambda: |-
-    auto progress = new core::analyzer::ProgressSensor();
-    get_analyzerQueue(id(queue))->addSensor(progress);
-    return {&progress->m_printProgress, &progress->m_remainingTime};
-  sensors:
-  - name: "${printer_name} Print Progress"
-    unit_of_measurement: "%"
-  - name: "${printer_name} Remaining Time"
-    unit_of_measurement: "min"
+- platform: M73_Progress
+  name: "${printer_name} Print Progress"
+- platform: M73_RemainingTime
+  name: "${printer_name} Remaining Time"
+
+climate:
+- platform: GCodeClimate
+  id: tool_temp
+  name: "${printer_name} Tool Temperature"
+  heater_element: tool
+  visual:
+    min_temperature: 0 °C
+    max_temperature: 250 °C
+    temperature_step: 1 °C
+- platform: GCodeClimate
+  id: bed_temp
+  name: "${printer_name} Bed Temperature"
+  heater_element: bed
+  visual:
+    min_temperature: 0 °C
+    max_temperature: 80 °C
+    temperature_step: 1 °C
