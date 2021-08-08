@@ -2,8 +2,8 @@
 
 [![Compile](https://github.com/Adi146/EspPrint/actions/workflows/compile.yml/badge.svg)](https://github.com/Adi146/EspPrint/actions)
 
-EspPrint is a ESP32 firmware to control 3D-Printers with GCode. 
-It is based on [ESPHome](https://esphome.io/) and therefore integrates well in [Home Assistant](https://www.home-assistant.io/).
+The are Custom Componenets for [ESPHome](https://esphome.io/) to control 3D-Printers with GCode over a ESP32.
+There are also some Lovelace Cards for [Home Assistant](https://www.home-assistant.io/) provided for better integration.
 
 :exclamation::exclamation::exclamation:
 
