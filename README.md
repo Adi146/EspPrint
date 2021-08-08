@@ -2,7 +2,7 @@
 
 [![Compile](https://github.com/Adi146/EspPrint/actions/workflows/compile.yml/badge.svg)](https://github.com/Adi146/EspPrint/actions)
 
-The are Custom Componenets for [ESPHome](https://esphome.io/) to control 3D-Printers with GCode over a ESP32.
+These are Custom Componenets for [ESPHome](https://esphome.io/) to control 3D-Printers with GCode over a ESP32.
 There are also some Lovelace Cards for [Home Assistant](https://www.home-assistant.io/) provided for better integration.
 
 :exclamation::exclamation::exclamation:
