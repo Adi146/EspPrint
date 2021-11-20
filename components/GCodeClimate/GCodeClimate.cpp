@@ -1,4 +1,5 @@
 #include "GCodeClimate.h"
+#include "esphome/core/helpers.h"
 
 using namespace core::analyzer;
 
