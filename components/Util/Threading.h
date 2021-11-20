@@ -28,7 +28,7 @@ namespace util {
 
       while(true) {
         t->threadLoop();
-        delay(t->m_delayMs);
+        vTaskDelay(t->m_delayMs / portTICK_PERIOD_MS);
       }
     }
   };
