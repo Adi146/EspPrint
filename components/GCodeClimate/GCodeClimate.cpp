@@ -77,8 +77,8 @@ void GCodeClimate::handleLine(std::string& gcode, GCodeSource source) {
     int index = atoi(match[2].str().c_str());
 
     if(m_token == token && m_index == index) {
-      float currentTemp = parse_float(match[3].str()).value_or(0.0f);
-      float targetTemp = parse_float(match[5].str()).value_or(0.0f);
+      float currentTemp = parse_number<float>(match[3].str()).value_or(0.0f);
+      float targetTemp = parse_number<float>(match[5].str()).value_or(0.0f);
 
       update(currentTemp, targetTemp);
     }

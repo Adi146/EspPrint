@@ -1,4 +1,5 @@
 #include "GCodeSender.h"
+#include "esphome/core/hal.h"
 
 using namespace core::communication;
 
@@ -25,7 +26,7 @@ void GCodeSender::threadLoop() {
 
   // clock on ESP32 is not very precise.
   // sometimes millis() returns a value smaller than m_lastCommandTimestamp so we got to check for overflows.
-  uint32_t delta = millis() - m_lastCommandTimestamp;
+  uint32_t delta = esphome::millis() - m_lastCommandTimestamp;
   if (delta > 10000 && delta < 200000 && m_sentLineNumber - m_processedLineNumber > 0) {   
     ESP_LOGW("gcode_sender", "timeout (%u) for line %llu, fake ok", delta, m_processedLineNumber);
     m_timeoutCounter++;
@@ -70,7 +71,7 @@ bool GCodeSender::sendGCode(std::string gcode, int timeout) {
       m_inputBufferMutex.unlock();
       return false;
     }
-    delay(1);
+    esphome::delay(1);
   }
 
   m_inputBuffer.push(gcode);
@@ -119,5 +120,5 @@ void GCodeSender::handleResend(uint64_t lineNumber) {
 }
 
 void GCodeSender::handleBusy() {
-  m_lastCommandTimestamp = millis();
+  m_lastCommandTimestamp = esphome::millis();
 }

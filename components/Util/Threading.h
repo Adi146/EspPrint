@@ -1,5 +1,7 @@
 #pragma once
 
+#include "esphome/core/hal.h"
+
 namespace debug {
   class StackSensor;
 }
@@ -28,7 +30,7 @@ namespace util {
 
       while(true) {
         t->threadLoop();
-        vTaskDelay(t->m_delayMs / portTICK_PERIOD_MS);
+        esphome::delay(t->m_delayMs);
       }
     }
   };
