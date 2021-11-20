@@ -13,7 +13,7 @@ esphome:
 external_components:
   - source:
       type: local
-      path: src/components
+      path: components
 
 GCodeQueue:
 
